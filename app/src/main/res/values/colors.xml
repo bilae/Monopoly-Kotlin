@@ -1,5 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <color name="backgroundColor">#F5F5DC</color> <!-- Beige clair -->
+    <color name="primaryColor">#008080</color> <!-- Bleu-vert -->
+    <color name="buttonColor">#FFA500</color> <!-- Orange -->
+    <color name="textColor">#333333</color> <!-- Gris foncé -->
 </resources>
