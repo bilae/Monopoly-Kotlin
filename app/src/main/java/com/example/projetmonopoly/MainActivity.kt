@@ -1,5 +1,4 @@
 package com.example.projetmonopoly
-
 import android.content.Intent
 import android.os.Bundle
 import android.widget.*
@@ -15,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         val btnStartGame: Button = findViewById(R.id.btnStartGame)
 
         // Ici on choisit le nb de joueurs (des bots enft)
-        val botOptions = arrayOf("1 Bot", "2 Bots", "3 Bots", "4 Bots")
+        val botOptions = arrayOf("1 Bot", "2 Bots", "3 Bots")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, botOptions)
         spinnerBots.adapter = adapter
 
