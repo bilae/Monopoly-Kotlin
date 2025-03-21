@@ -14,8 +14,7 @@ class GameActivity : AppCompatActivity() {
         val botViews = listOf(
             findViewById<TextView>(R.id.bot1),
             findViewById<TextView>(R.id.bot2),
-            findViewById<TextView>(R.id.bot3),
-            findViewById<TextView>(R.id.bot4)
+            findViewById<TextView>(R.id.bot3)
         )
 
         // Afficher uniquement le nombre de bots sélectionné
