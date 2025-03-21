@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         btnStartGame.setOnClickListener {
             val selectedBots = spinnerBots.selectedItem.toString().split(" ")[0].toInt()
 
-            // Transfer de l'info vers le Game Activity
+            // Transfère l'info vers le Game Activity
             val intent = Intent(this, GameActivity::class.java)
             intent.putExtra("NUM_BOTS", selectedBots)
             startActivity(intent)
