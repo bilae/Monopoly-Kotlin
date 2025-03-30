@@ -8,9 +8,9 @@
     <!-- Plateau Monopoly -->
     <ImageView
         android:id="@+id/boardImage"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:src="@drawable/monopoly_board"
+        android:layout_width="400dp"
+        android:layout_height="400dp"
+        android:src="@drawable/plateau_monopoly"
         android:layout_centerInParent="true"/>
 
     <!-- Bots autour du plateau -->
@@ -27,10 +27,10 @@
         android:layout_marginBottom="10dp"/>
 
     <TextView
-        android:id="@+id/bot2"
+        android:id="@+id/Joueur"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bot 2"
+        android:text="Joueur"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/primaryColor"
@@ -42,7 +42,7 @@
         android:id="@+id/bot3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bot 3"
+        android:text="Bot 2"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/primaryColor"
@@ -54,12 +54,24 @@
         android:id="@+id/bot4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bot 4"
+        android:text="Bot 3"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/primaryColor"
         android:layout_toEndOf="@id/boardImage"
         android:layout_centerVertical="true"
         android:layout_marginStart="10dp"/>
+
+    <Button
+        android:id="@+id/myButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Lancer le dé"
+        android:layout_below="@id/Joueur"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
+
+
 
 </RelativeLayout>

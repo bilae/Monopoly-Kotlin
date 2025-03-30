@@ -10,13 +10,14 @@
 
     <!-- Titre du jeu -->
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="274dp"
         android:layout_height="wrap_content"
-        android:text="Bienvenue sur le jeu Monopoly"
-        android:textSize="26sp"
-        android:textStyle="bold"
+        android:layout_marginBottom="30dp"
+        android:gravity="center"
+        android:text="Bienvenue sur le jeu Monopoly-morphisme"
         android:textColor="@color/primaryColor"
-        android:layout_marginBottom="30dp"/>
+        android:textSize="26sp"
+        android:textStyle="bold" />
 
     <!-- Sélection du nombre de bots -->
     <TextView
