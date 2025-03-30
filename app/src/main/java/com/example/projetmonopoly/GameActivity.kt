@@ -37,5 +37,7 @@ class GameActivity : AppCompatActivity() {
             pionViews[i].visibility = if (i < numBots + 1) ImageView.VISIBLE else ImageView.INVISIBLE
         }
 
+
+
     }
 }
