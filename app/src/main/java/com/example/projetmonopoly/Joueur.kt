@@ -2,7 +2,7 @@ package com.example.projetmonopoly
 
 import kotlin.random.Random
 
-class Joueur(val couleur : String, val nom : String, var argent : Int){
+open class Joueur(val pion : Pion, val nom : String, var argent : Int){
 
     fun acheter(propriete: String, prix : Int){
         argent -= prix
@@ -10,9 +10,10 @@ class Joueur(val couleur : String, val nom : String, var argent : Int){
     }
     fun lancerDe(){
         val resultat = Random.nextInt(1,7)
-        //avancerPion(resultat)
+        pion.avancer(resultat)
     }
     fun transaction(prix : Int, type : Int){
+        //Type sera genre si c'est donner ou recevoir de l'argent (carte chance ou case propriété)
         if (type == 0) {
             argent -= prix
         }
