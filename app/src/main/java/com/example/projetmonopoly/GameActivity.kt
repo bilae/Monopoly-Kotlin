@@ -1,8 +1,10 @@
 package com.example.projetmonopoly
 import android.os.Bundle
+import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ImageView
+import kotlin.random.Random
 
 class GameActivity : AppCompatActivity() {
 
@@ -35,6 +37,21 @@ class GameActivity : AppCompatActivity() {
 
         for (i in pionViews.indices) {
             pionViews[i].visibility = if (i < numBots + 1) ImageView.VISIBLE else ImageView.INVISIBLE
+        }
+        val DiceImage : ImageView = findViewById(R.id.de1)
+        val BoutonLancer : Button = findViewById(R.id.lancerDé)
+        BoutonLancer.setOnClickListener{
+            val randomNumber = Random.nextInt(1,7) // génère un nbre entre 1 et 6
+            val drawableResource = when(randomNumber){
+                1 -> R.drawable.de1
+                2 -> R.drawable.de2
+                3 -> R.drawable.de3
+                4 -> R.drawable.de4
+                5 -> R.drawable.de5
+                else -> R.drawable.de6
+
+            }
+            DiceImage.setImageResource(drawableResource) // met à jour l'image
         }
 
 

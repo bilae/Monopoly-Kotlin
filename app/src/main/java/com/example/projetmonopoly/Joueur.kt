@@ -10,7 +10,7 @@ open class Joueur(val pion : Pion, val nom : String, var argent : Int){
     }
     fun lancerDe(){
         val resultat = Random.nextInt(1,7)
-        pion.avancer(resultat)
+
     }
     fun transaction(prix : Int, type : Int){
         //Type sera genre si c'est donner ou recevoir de l'argent (carte chance ou case propriété)
