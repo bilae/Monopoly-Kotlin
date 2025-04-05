@@ -28,7 +28,17 @@ class GameActivity : AppCompatActivity() {
             findViewById<ImageView>(R.id.pion_rouge),
             findViewById<ImageView>(R.id.pion_bleu)
         )
+        val couleurs = listOf("vert", "jaune", "rouge", "bleu")
+        val pions = mutableListOf<Pion>()
 
+        // Créer le pion du joueur
+        pions.add(Pion(couleur = couleurs[0], xpos = 0, ypos = 0, prison = false))
+
+        // Créer les pions bots
+        for (i in 1..numBots) {
+            val couleur = couleurs[i]
+            pions.add(Pion(couleur = couleur, xpos = 0, ypos = 0, prison = false))
+        }
 
         // Afficher uniquement le nombre de bots sélectionné
         for (i in botViews.indices) {
@@ -38,6 +48,16 @@ class GameActivity : AppCompatActivity() {
         for (i in pionViews.indices) {
             pionViews[i].visibility = if (i < numBots + 1) ImageView.VISIBLE else ImageView.INVISIBLE
         }
+
+        //ajouter le joueur
+        val Joueurs = mutableListOf<Joueur>()
+        Joueurs.add(Joueur(pions[0], "Joueur",1000, isbot = false))
+
+        // Ajouter les bots
+        for (i in 1..numBots) {
+            Joueurs.add(Joueur(pions[i], "BOT$i", 1000, isbot = true))
+        }
+
         val DiceImage : ImageView = findViewById(R.id.de1)
         val BoutonLancer : Button = findViewById(R.id.lancerDé)
         BoutonLancer.setOnClickListener{
