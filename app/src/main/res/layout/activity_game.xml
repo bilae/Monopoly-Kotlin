@@ -18,29 +18,32 @@
 
     <ImageView
         android:id="@+id/pion_vert"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:src="@drawable/pion_vert"
         />
 
     <ImageView
         android:id="@+id/pion_rouge"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
         android:src="@drawable/pion_rouge" />
-
-    <ImageView
-        android:id="@+id/pion_bleu"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:src="@drawable/pion_bleu" />
 
     <!-- Bots autour du plateau -->
 
     <ImageView
+        android:id="@+id/pion_bleu"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:src="@drawable/pion_bleu" />
+
+    <ImageView
         android:id="@+id/pion_jaune"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignBottom="@+id/boardImage"
+        android:layout_marginStart="0dp"
+        android:layout_marginBottom="0dp"
         android:src="@drawable/pion_jaune" />
 
     <TextView
