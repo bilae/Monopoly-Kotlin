@@ -51,28 +51,62 @@ class GameActivity : AppCompatActivity() {
 
         //ajouter le joueur
         val Joueurs = mutableListOf<Joueur>()
-        Joueurs.add(Joueur(pions[0], "Joueur",1000, isbot = false))
-
+        Joueurs.add(Joueur(pions[0], "Joueur",1500, isbot = false))
+        val vraijoueur = Joueurs[0]
         // Ajouter les bots
         for (i in 1..numBots) {
-            Joueurs.add(Joueur(pions[i], "BOT$i", 1000, isbot = true))
+            Joueurs.add(Joueur(pions[i], "BOT$i", 1500, isbot = true))
         }
 
         val DiceImage : ImageView = findViewById(R.id.de1)
         val BoutonLancer : Button = findViewById(R.id.lancerDé)
-        BoutonLancer.setOnClickListener{
-            val randomNumber = Random.nextInt(1,7) // génère un nbre entre 1 et 6
-            val drawableResource = when(randomNumber){
-                1 -> R.drawable.de1
-                2 -> R.drawable.de2
-                3 -> R.drawable.de3
-                4 -> R.drawable.de4
-                5 -> R.drawable.de5
-                else -> R.drawable.de6
 
+        var gamestop = false //conditions à ajouter
+        var tour = 0
+        //début lancement du tour
+        while (gamestop == false) {
+            tour += 1
+            for (i in 0..numBots) { //tour de chaque joueur i (0 = vraijoueur)
+                //séparation tour du vrai joueur des tours des bots
+                if (i==0) {
+                    BoutonLancer.setOnClickListener {
+                        val resultde = vraijoueur.lancerde()
+                        val drawableResource = when (resultde) {
+                            1 -> R.drawable.de1
+                            2 -> R.drawable.de2
+                            3 -> R.drawable.de3
+                            4 -> R.drawable.de4
+                            5 -> R.drawable.de5
+                            else -> R.drawable.de6
+                        }
+                        DiceImage.setImageResource(drawableResource) // met à jour l'image
+                        vraijoueur.goto(resultde)
+                    }
+                    // vraijoueur.posjoueur() -> fonction qui vérifie ou est le joueur et lance l'action d'achat/prison/loyer
+
+                }
+                //tours des bots
+                else {
+                    val resultde = Joueurs[i].lancerde()
+                    val drawableResource = when (resultde) {
+                        1 -> R.drawable.de1
+                        2 -> R.drawable.de2
+                        3 -> R.drawable.de3
+                        4 -> R.drawable.de4
+                        5 -> R.drawable.de5
+                        else -> R.drawable.de6
+                    }
+                    DiceImage.setImageResource(drawableResource) // met à jour l'image
+                    vraijoueur.goto(resultde)
+                }
             }
-            DiceImage.setImageResource(drawableResource) // met à jour l'image
-        }
+
+
+
+        } //fin du while (du jeu)
+
+
+
 
 
 

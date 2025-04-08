@@ -2,10 +2,18 @@ package com.example.projetmonopoly
 
 import kotlin.random.Random
 
-open class Joueur(val pion : Pion, val nom : String, var argent : Int, val isbot : Boolean) {
+class Joueur(val pion : Pion, val nom : String, var argent : Int, val isbot : Boolean) {
 
     fun acheter(propriete: String, prix : Int) {
         argent -= prix
+    }
+
+    fun lancerde() : Int {
+        return Random.nextInt(1,7) // génère un nbre entre 1 et 6
+    }
+
+    fun goto(nombrecase){
+        //avance de "nombrecase"
     }
 
     fun transaction(prix: Int, type: Int) {
