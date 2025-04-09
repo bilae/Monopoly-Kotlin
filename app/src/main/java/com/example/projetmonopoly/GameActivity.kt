@@ -66,6 +66,10 @@ class GameActivity : AppCompatActivity() {
         //début lancement du tour
         while (gamestop == false) {
             tour += 1
+            if (tour == 1){ //temporaire pour les tests
+                gamestop = true
+            }
+
             for (i in 0..numBots) { //tour de chaque joueur i (0 = vraijoueur)
                 //séparation tour du vrai joueur des tours des bots
                 if (i==0) {
@@ -99,7 +103,7 @@ class GameActivity : AppCompatActivity() {
                     DiceImage.setImageResource(drawableResource) // met à jour l'image
                     vraijoueur.goto(resultde)
                 }
-            }
+            } //fin du tour
 
 
 
