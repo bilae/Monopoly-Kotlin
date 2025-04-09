@@ -12,10 +12,6 @@ class Joueur(val pion : Pion, val nom : String, var argent : Int, val isbot : Bo
         return Random.nextInt(1,7) // génère un nbre entre 1 et 6
     }
 
-    fun goto(nombrecase : Int){
-        //avance de "nombrecase"
-    }
-
     fun transaction(prix: Int, type: Int) {
         //Type sera genre si c'est donner ou recevoir de l'argent (carte chance ou case propriété)
         if (type == 0) {

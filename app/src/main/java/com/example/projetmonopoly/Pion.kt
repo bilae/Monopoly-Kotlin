@@ -1,10 +1,19 @@
 package com.example.projetmonopoly
+import android.widget.ImageView
 
-class Pion(val couleur: String, var xpos : Int, ypos: Int, var prison : Boolean) {
-    //fun avancer(resultat){
+class Pion(val couleur: String, var xpos : Float, var ypos: Float, var prison : Boolean, var image : ImageView, var case : Int) {
 
-        // si y>max y+=, if y=ymax -> x+= tant que x< xmax ?
-        // trouver un rapport avec le nombre du dé style 1 = x dp -> 3 = 3*x dp ?
-        // lier aux cases style go to case8 ? -> donner coord a chaque cases
+    fun goto(x : Float,y: Float,Plateau : ImageView) {
+        Plateau.post {
+            image.animate() //Animation par chatgpt
+                .x(x)
+                .y(y)
+                .setDuration(500) // Animation de 500ms
+                .start()
 
+            // Mettre à jour les positions réelles du pion
+            xpos = x.toFloat()
+            ypos = y.toFloat()
+        }
+    }
     }

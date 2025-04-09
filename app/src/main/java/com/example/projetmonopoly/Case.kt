@@ -1,12 +1,13 @@
 package com.example.projetmonopoly
 
-open class Case(val xpos : Int, val ypos : Int, val nom : String) {
-
+open class Case(val index : Int, val xpos : Float, val ypos : Float, val nom : String) {
+    operator fun component1() = xpos
+    operator fun component2() = ypos
 }
 
 
-class Proprietes(xpos : Int, ypos : Int, nom : String, val prix : Int, var location : Int,
-                 var proprietaire : String) : Case(xpos, ypos, nom){
+class Proprietes(index: Int , xpos : Float, ypos : Float, nom : String, val prix : Int, var location : Int,
+                 var proprietaire : String) : Case(index, xpos, ypos, nom){
     fun acheter(argent : Int, prix : Int, joueur : String){
 
     }
