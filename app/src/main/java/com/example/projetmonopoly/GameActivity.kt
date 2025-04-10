@@ -198,8 +198,45 @@ class GameActivity : AppCompatActivity() {
                     }
                 }
             } //fin du tour
+            fun joueurArriveSurCase(Joueur: Joueur, pion: Pion) {
 
-            // conditions d'arrêts de la partie
+                val tolérance = 0.05f
+                val case = boardPositions.find {
+                    Math.abs(it.xpos - pion.xpos) < tolérance && Math.abs(it.ypos - pion.ypos) < tolérance
+                }
+
+                when (case) {
+                    is CaseDépart -> {
+                        println("Vous êtes sur la case ${case.nom}. Vous recevez 1000 $ !")
+                        Joueur.transaction(1000,1)
+                    }
+                    is CasePrison -> {
+                        println("Vous êtes sur la case ${case.nom}. Allez directement en prison !")
+                        Joueur.pion.prison = true
+
+                    }
+                    is CaseChance -> {
+                        println("Vous êtes sur une ${case.nom}. Piochez une carte chance !")
+                        // Logique pour piocher une carte chance (à implémenter)
+                    }
+                    is Proprietes -> {
+                        println("Voulez-vous acheter ${case.nom} pour ${case.prix} ? (oui/non)")
+                        val reponse = readln() // Lis la réponse du joueur (oui/non)
+
+                        if (reponse.lowercase() == "oui") {
+                            if (Joueur.argent >= case.prix) {
+                                Joueur.acheter(case.nom, case.prix)
+                                println("${Joueur.nom} a acheté ${case.nom} pour ${case.prix}. Argent restant : ${Joueur.argent}.")
+                            } else {
+                                println("Vous n'avez pas assez d'argent pour acheter ${case.nom}.")
+                            }
+                        } else {
+                            println("${Joueur.nom} a choisi de ne pas acheter ${case.nom}.")
+                        }
+                    }
+                }
+            }
+        // conditions d'arrêts de la partie
             var nbreBotEnNegatif = 0     // variable pour connaitre nbre de bot qui sont en dessous de 0 euros
             for (i in 1..numBots){
                if(Joueurs[i].argent < 0) nbreBotEnNegatif += 1
