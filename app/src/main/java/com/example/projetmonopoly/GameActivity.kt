@@ -172,6 +172,7 @@ class GameActivity : AppCompatActivity() {
                         pions[0].case += resultde
                         val (absx, absy) = getCasePosition(pions[0].case)
                         pions[0].goto(absx, absy, Plateau)
+                        vraijoueur.argent -= 100
 
                     }
                     // vraijoueur.posjoueur() -> fonction qui vérifie ou est le joueur et lance l'action d'achat/prison/loyer
@@ -192,6 +193,9 @@ class GameActivity : AppCompatActivity() {
                     pions[i].case += resultde
                     val (absx, absy) = getCasePosition(pions[i].case)
                     pions[i].goto(absx, absy, Plateau)
+                    for (i in 1..numBots) {
+                        Joueurs[i].argent -= 100
+                    }
                 }
             } //fin du tour
 
