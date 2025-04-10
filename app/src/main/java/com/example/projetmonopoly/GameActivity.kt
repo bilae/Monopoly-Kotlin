@@ -24,35 +24,36 @@ class GameActivity : AppCompatActivity() {
         val Plateau = findViewById<ImageView>(R.id.boardImage)
 
         // Liste des positions des cases en pourcentage du plateau (X%, Y%)
+        // Objet joueur à définir plus tard dans propriétaire
         val boardPositions = listOf(
-            Case(0, 0.90f, 0.90f,"Départ"),  // Départ
-            Case(1, 0.75f, 0.90f,"Rio"),
-            Case(2, 0.60f, 0.90f,"Delhi"),
-            Case(3, 0.45f, 0.90f,"Bangkok"),
-            Case(4, 0.30f, 0.90f,"Gare bleu"),
-            Case(5, 0.15f, 0.90f,"Caire"),
-            Case(6, 0.00f, 0.90f,"Madrid"),
-            Case(7, 0.00f, 0.75f,"Chance"),
-            Case(8, 0.00f, 0.60f,"Jakarta"),
-            Case(9, 0.00f, 0.45f,"Berlin"),
-            Case(10, 0.00f, 0.30f,"Moscou"),
-            Case(11, 0.00f, 0.15f,"Gare orange"),
-            Case(12, 0.00f, 0.00f,"Toronto"),
-            Case(13, 0.15f, 0.00f,"Séoul"),
-            Case(14, 0.30f, 0.00f,"Prison"),
-            Case(15, 0.45f, 0.00f,"Zurich"),
-            Case(16, 0.60f, 0.00f,"Riyadh"),
-            Case(17, 0.75f, 0.00f,"Sydney"),
-            Case(18, 0.90f, 0.00f,"Gare verte"),
-            Case(19, 0.90f, 0.15f,"Beijing"),
-            Case(20, 0.90f, 0.30f,"Dubai"),
-            Case(21, 0.90f, 0.45f,"Carte chance"),
-            Case(22, 0.90f, 0.60f,"Paris"),
-            Case(23, 0.90f, 0.75f,"Hong Kong"),
-            Case(24, 0.75f, 0.75f,"Londres"),
-            Case(25, 0.60f, 0.75f,"Gare rouge"),
-            Case(26, 0.45f, 0.75f,"Tokyo"),
-            Case(27, 0.30f, 0.75f,"New-York")
+            CaseDépart(0, 0.90f, 0.90f,"Départ"),  // Départ
+            Proprietes(1, 0.75f, 0.90f,"Rio",100,10,"Ce sera un objet joueur"),
+            Proprietes(2, 0.60f, 0.90f,"Delhi",100,10,""),
+            Proprietes(3, 0.45f, 0.90f,"Bangkok",130,15,""),
+            Proprietes(4, 0.30f, 0.90f,"Gare bleu",100,35,""),
+            Proprietes(5, 0.15f, 0.90f,"Caire",150,15,""),
+            Proprietes(6, 0.00f, 0.90f,"Madrid",150,15,""),
+            CaseChance(7, 0.00f, 0.75f,"Chance",),
+            Proprietes(8, 0.00f, 0.60f,"Jakarta",170,20,""),
+            Proprietes(9, 0.00f, 0.45f,"Berlin",180,20,""),
+            Proprietes(10, 0.00f, 0.30f,"Moscou",200,30,""),
+            Proprietes(11, 0.00f, 0.15f,"Gare orange",150,35,""),
+            Proprietes(12, 0.00f, 0.00f,"Toronto",200,30,""),
+            Proprietes(13, 0.15f, 0.00f,"Séoul",200,30,""),
+            CasePrison(14, 0.30f, 0.00f,"Prison"),
+            Proprietes(15, 0.45f, 0.00f,"Zurich",250,35,""),
+            Proprietes(16, 0.60f, 0.00f,"Riyadh",250,35,""),
+            Proprietes(17, 0.75f, 0.00f,"Sydney",300,40,""),
+            Proprietes(18, 0.90f, 0.00f,"Gare verte",200,35,""),
+            Proprietes(19, 0.90f, 0.15f,"Beijing",300,40,""),
+            Proprietes(20, 0.90f, 0.30f,"Dubai",300,40,""),
+            CaseChance(21, 0.90f, 0.45f,"Carte chance"),
+            Proprietes(22, 0.90f, 0.60f,"Paris",350,45,""),
+            Proprietes(23, 0.90f, 0.75f,"Hong Kong",350,50,""),
+            Proprietes(24, 0.75f, 0.75f,"Londres",420,70,""),
+            Proprietes(25, 0.60f, 0.75f,"Gare rouge",250,35,""),
+            Proprietes(26, 0.45f, 0.75f,"Tokyo",420,70,""),
+            Proprietes(27, 0.30f, 0.75f,"New-York",450,80,"")
         )
 
         val pionViews = listOf(

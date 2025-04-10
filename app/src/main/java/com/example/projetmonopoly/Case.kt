@@ -12,3 +12,18 @@ class Proprietes(index: Int , xpos : Float, ypos : Float, nom : String, val prix
 
     }
 }
+
+class CasePrison(index: Int , xpos : Float, ypos : Float,nom : String) : Case(index, xpos, ypos,nom){
+    fun estenprison(jours_restants : Int){
+    }
+}
+
+class CaseChance(index: Int , xpos : Float, ypos : Float,nom : String) : Case(index, xpos, ypos,nom){
+    fun piochercarte(){
+    }
+}
+
+class CaseDépart(index: Int , xpos : Float, ypos : Float,nom : String) : Case(index, xpos, ypos,nom){
+    fun donnerArgent(Argent_caseDépart : Int){
+    }
+}
