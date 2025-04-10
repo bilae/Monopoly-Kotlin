@@ -5,7 +5,7 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ImageView
-import kotlin.random.Random
+
 
 class GameActivity : AppCompatActivity() {
 
@@ -149,17 +149,15 @@ class GameActivity : AppCompatActivity() {
         val BoutonLancer : Button = findViewById(R.id.lancerDé)
 
         var gamestop = false //conditions à ajouter
-        var tour = 0
+
         //début lancement du tour
         while (gamestop == false) {
-            tour += 1
-            if (tour == 1){ //temporaire pour les tests
-                gamestop = true
-            }
+
+
 
             for (i in 0..numBots) { //tour de chaque joueur i (0 = vraijoueur)
                 //séparation tour du vrai joueur des tours des bots
-                if (i==0) {
+                if (i == 0) {
                     BoutonLancer.setOnClickListener {
                         val resultde = vraijoueur.lancerde()
                         val drawableResource = when (resultde) {
@@ -173,7 +171,7 @@ class GameActivity : AppCompatActivity() {
                         DiceImage.setImageResource(drawableResource) // met à jour l'image
                         pions[0].case += resultde
                         val (absx, absy) = getCasePosition(pions[0].case)
-                        pions[0].goto(absx,absy,Plateau)
+                        pions[0].goto(absx, absy, Plateau)
 
                     }
                     // vraijoueur.posjoueur() -> fonction qui vérifie ou est le joueur et lance l'action d'achat/prison/loyer
@@ -193,11 +191,18 @@ class GameActivity : AppCompatActivity() {
                     DiceImage.setImageResource(drawableResource) // met à jour l'image
                     pions[i].case += resultde
                     val (absx, absy) = getCasePosition(pions[i].case)
-                    pions[i].goto(absx,absy,Plateau)
+                    pions[i].goto(absx, absy, Plateau)
                 }
             } //fin du tour
 
-
+            // conditions d'arrêts de la partie
+            var nbreBotEnNegatif = 0     // variable pour connaitre nbre de bot qui sont en dessous de 0 euros
+            for (i in 1..numBots){
+               if(Joueurs[i].argent < 0) nbreBotEnNegatif += 1
+            }
+            if (Joueurs[0].argent < 0) gamestop = true    // si vraijoueur a moins que 0 euros -> fin de partie
+            else if ( nbreBotEnNegatif == numBots ) gamestop = true   // si tt les bots ont moins que 0 -> fin de partie
+            else gamestop = false
 
         } //fin du while (du jeu)
 
