@@ -1,13 +1,22 @@
 package com.example.projetmonopoly
+
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ImageView
-
+import androidx.appcompat.app.AlertDialog
 
 class GameActivity : AppCompatActivity() {
+    fun afficherMessage(context: Context, titre: String, message: String) {
+        AlertDialog.Builder(context)
+            .setTitle(titre)
+            .setMessage(message)
+            .setPositiveButton("OK", null)
+            .show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,33 +36,33 @@ class GameActivity : AppCompatActivity() {
         // Objet joueur à définir plus tard dans propriétaire
         val boardPositions = listOf(
             CaseDépart(0, 0.90f, 0.90f,"Départ"),  // Départ
-            Proprietes(1, 0.75f, 0.90f,"Rio",100,10,"Ce sera un objet joueur"),
-            Proprietes(2, 0.60f, 0.90f,"Delhi",100,10,""),
-            Proprietes(3, 0.45f, 0.90f,"Bangkok",130,15,""),
-            Proprietes(4, 0.30f, 0.90f,"Gare bleu",100,35,""),
-            Proprietes(5, 0.15f, 0.90f,"Caire",150,15,""),
-            Proprietes(6, 0.00f, 0.90f,"Madrid",150,15,""),
+            Proprietes(1, 0.75f, 0.90f,"Rio",100,10,null),
+            Proprietes(2, 0.60f, 0.90f,"Delhi",100,10,null),
+            Proprietes(3, 0.45f, 0.90f,"Bangkok",130,15,null),
+            Proprietes(4, 0.30f, 0.90f,"Gare bleu",100,35,null),
+            Proprietes(5, 0.15f, 0.90f,"Caire",150,15,null),
+            Proprietes(6, 0.00f, 0.90f,"Madrid",150,15,null),
             CaseChance(7, 0.00f, 0.75f,"Chance",),
-            Proprietes(8, 0.00f, 0.60f,"Jakarta",170,20,""),
-            Proprietes(9, 0.00f, 0.45f,"Berlin",180,20,""),
-            Proprietes(10, 0.00f, 0.30f,"Moscou",200,30,""),
-            Proprietes(11, 0.00f, 0.15f,"Gare orange",150,35,""),
-            Proprietes(12, 0.00f, 0.00f,"Toronto",200,30,""),
-            Proprietes(13, 0.15f, 0.00f,"Séoul",200,30,""),
+            Proprietes(8, 0.00f, 0.60f,"Jakarta",170,20,null),
+            Proprietes(9, 0.00f, 0.45f,"Berlin",180,20,null),
+            Proprietes(10, 0.00f, 0.30f,"Moscou",200,30,null),
+            Proprietes(11, 0.00f, 0.15f,"Gare orange",150,35,null),
+            Proprietes(12, 0.00f, 0.00f,"Toronto",200,30,null),
+            Proprietes(13, 0.15f, 0.00f,"Séoul",200,30,null),
             CasePrison(14, 0.30f, 0.00f,"Prison"),
-            Proprietes(15, 0.45f, 0.00f,"Zurich",250,35,""),
-            Proprietes(16, 0.60f, 0.00f,"Riyadh",250,35,""),
-            Proprietes(17, 0.75f, 0.00f,"Sydney",300,40,""),
-            Proprietes(18, 0.90f, 0.00f,"Gare verte",200,35,""),
-            Proprietes(19, 0.90f, 0.15f,"Beijing",300,40,""),
-            Proprietes(20, 0.90f, 0.30f,"Dubai",300,40,""),
+            Proprietes(15, 0.45f, 0.00f,"Zurich",250,35,null),
+            Proprietes(16, 0.60f, 0.00f,"Riyadh",250,35,null),
+            Proprietes(17, 0.75f, 0.00f,"Sydney",300,40,null),
+            Proprietes(18, 0.90f, 0.00f,"Gare verte",200,35,null),
+            Proprietes(19, 0.90f, 0.15f,"Beijing",300,40,null),
+            Proprietes(20, 0.90f, 0.30f,"Dubai",300,40,null),
             CaseChance(21, 0.90f, 0.45f,"Carte chance"),
-            Proprietes(22, 0.90f, 0.60f,"Paris",350,45,""),
-            Proprietes(23, 0.90f, 0.75f,"Hong Kong",350,50,""),
-            Proprietes(24, 0.75f, 0.75f,"Londres",420,70,""),
-            Proprietes(25, 0.60f, 0.75f,"Gare rouge",250,35,""),
-            Proprietes(26, 0.45f, 0.75f,"Tokyo",420,70,""),
-            Proprietes(27, 0.30f, 0.75f,"New-York",450,80,"")
+            Proprietes(22, 0.90f, 0.60f,"Paris",350,45,null),
+            Proprietes(23, 0.90f, 0.75f,"Hong Kong",350,50,null),
+            Proprietes(24, 0.75f, 0.75f,"Londres",420,70,null),
+            Proprietes(25, 0.60f, 0.75f,"Gare rouge",250,35,null),
+            Proprietes(26, 0.45f, 0.75f,"Tokyo",420,70,null),
+            Proprietes(27, 0.30f, 0.75f,"New-York",450,80,null)
         )
 
         val pionViews = listOf(
@@ -136,14 +145,11 @@ class GameActivity : AppCompatActivity() {
                 Log.e("Pion", "Index de case invalide: $index")
                 return Pair(boardX, boardY) // Retourne la position actuelle pour éviter les erreurs (fait par chatgpt)
             }
-
             val (relX, relY) = boardPositions[index]
             val absX = boardX + (relX * boardWidth)
             val absY = boardY + (relY * boardHeight)
-
             return Pair(absX, absY)
             }
-
         //images dé
         val DiceImage : ImageView = findViewById(R.id.de1)
         val BoutonLancer : Button = findViewById(R.id.lancerDé)
@@ -152,9 +158,6 @@ class GameActivity : AppCompatActivity() {
 
         //début lancement du tour
         while (gamestop == false) {
-
-
-
             for (i in 0..numBots) { //tour de chaque joueur i (0 = vraijoueur)
                 //séparation tour du vrai joueur des tours des bots
                 if (i == 0) {
@@ -198,7 +201,7 @@ class GameActivity : AppCompatActivity() {
                     }
                 }
             } //fin du tour
-            fun joueurArriveSurCase(Joueur: Joueur, pion: Pion) {
+            fun joueurArriveSurCase(context: Context, Joueur: Joueur, pion: Pion) {
 
                 val tolérance = 0.05f
                 val case = boardPositions.find {
@@ -207,36 +210,55 @@ class GameActivity : AppCompatActivity() {
 
                 when (case) {
                     is CaseDépart -> {
-                        println("Vous êtes sur la case ${case.nom}. Vous recevez 1000 $ !")
-                        Joueur.transaction(1000,1)
+                        afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 1000 $ !")
+                        Joueur.transaction(1000, 1)
                     }
+
                     is CasePrison -> {
-                        println("Vous êtes sur la case ${case.nom}. Allez directement en prison !")
+                        afficherMessage(context, "Prison", "Vous êtes sur la case ${case.nom}. Allez directement en prison !")
                         Joueur.pion.prison = true
-
                     }
+
                     is CaseChance -> {
-                        println("Vous êtes sur une ${case.nom}. Piochez une carte chance !")
-                        // Logique pour piocher une carte chance (à implémenter)
+                        afficherMessage(context, "Carte Chance", "Vous êtes sur une ${case.nom}. Piochez une carte chance !")
                     }
-                    is Proprietes -> {
-                        println("Voulez-vous acheter ${case.nom} pour ${case.prix} ? (oui/non)")
-                        val reponse = readln() // Lis la réponse du joueur (oui/non)
 
-                        if (reponse.lowercase() == "oui") {
-                            if (Joueur.argent >= case.prix) {
-                                Joueur.acheter(case.nom, case.prix)
-                                println("${Joueur.nom} a acheté ${case.nom} pour ${case.prix}. Argent restant : ${Joueur.argent}.")
+                    is Proprietes -> {
+                        if (case.proprietaire != null && case.proprietaire != Joueur) {
+                            afficherMessage(context, "Loyer", "${case.nom} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location}.")
+
+                            if (Joueur.argent >= case.location) {
+                                Joueur.argent -= case.location
+                                case.proprietaire!!.argent += case.location
+                                afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location} à ${case.proprietaire!!.nom}.")
                             } else {
-                                println("Vous n'avez pas assez d'argent pour acheter ${case.nom}.")
+                                afficherMessage(context, "Fonds insuffisants", "Vous n'avez pas assez d'argent pour payer le loyer.")
                             }
-                        } else {
-                            println("${Joueur.nom} a choisi de ne pas acheter ${case.nom}.")
+
+                        } else if (case.proprietaire == null) {
+                            // Boîte de dialogue personnalisée avec choix
+                            AlertDialog.Builder(context)
+                                .setTitle("Acheter ${case.nom} ?")
+                                .setMessage("Voulez-vous acheter ${case.nom} pour ${case.prix} $ ?")
+                                .setPositiveButton("Oui") { _, _ ->
+                                    if (Joueur.argent >= case.prix) {
+                                        Joueur.acheter(case.nom, case.prix)
+                                        case.proprietaire = Joueur
+                                        afficherMessage(context, "Achat réussi", "${Joueur.nom} a acheté ${case.nom} pour ${case.prix} $. Argent restant : ${Joueur.argent}.")
+                                    } else {
+                                        afficherMessage(context, "Achat refusé", "Vous n'avez pas assez d'argent pour acheter ${case.nom}.")
+                                    }
+                                }
+                                .setNegativeButton("Non") { _, _ ->
+                                    afficherMessage(context, "Achat annulé", "${Joueur.nom} a choisi de ne pas acheter ${case.nom}.")
+                                }
+                                .show()
                         }
                     }
                 }
             }
-        // conditions d'arrêts de la partie
+
+            // conditions d'arrêts de la partie
             var nbreBotEnNegatif = 0     // variable pour connaitre nbre de bot qui sont en dessous de 0 euros
             for (i in 1..numBots){
                if(Joueurs[i].argent < 0) nbreBotEnNegatif += 1
@@ -246,11 +268,5 @@ class GameActivity : AppCompatActivity() {
             else gamestop = false
 
         } //fin du while (du jeu)
-
-
-
-
-
-
     }
 }

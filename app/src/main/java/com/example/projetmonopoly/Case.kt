@@ -7,7 +7,7 @@ open class Case(val index : Int, val xpos : Float, val ypos : Float, val nom : S
 
 
 class Proprietes(index: Int , xpos : Float, ypos : Float, nom : String, val prix : Int, var location : Int,
-                 var proprietaire : String) : Case(index, xpos, ypos, nom){
+                 var proprietaire :Joueur? = null) : Case(index, xpos, ypos, nom){
     fun acheter(argent : Int, prix : Int, joueur : String){
 
     }
