@@ -237,6 +237,7 @@ class GameActivity : AppCompatActivity() {
                     is CasePrison -> {
                         afficherMessage(context, "Prison", "Vous êtes sur la case ${case.nom}. Allez directement en prison !")
                         Joueur.pion.prison = true
+                        Joueur.toursRestantsEnPrison = 2
                     }
 
                     is CaseChance -> {
