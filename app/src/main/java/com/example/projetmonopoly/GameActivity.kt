@@ -63,6 +63,7 @@ class GameActivity : AppCompatActivity() {
             Proprietes(25, 0.60f, 0.75f,"Gare rouge",250,35,null),
             Proprietes(26, 0.45f, 0.75f,"Tokyo",420,70,null),
             Proprietes(27, 0.30f, 0.75f,"New-York",450,80,null)
+
         )
 
         val pionViews = listOf(
@@ -222,7 +223,6 @@ class GameActivity : AppCompatActivity() {
                 }
             } //fin du tour
             fun joueurArriveSurCase(context: Context, Joueur: Joueur, pion: Pion) {
-
                 val tolérance = 0.05f
                 val case = boardPositions.find {
                     Math.abs(it.xpos - pion.xpos) < tolérance && Math.abs(it.ypos - pion.ypos) < tolérance
@@ -230,50 +230,78 @@ class GameActivity : AppCompatActivity() {
 
                 when (case) {
                     is CaseDépart -> {
-                        afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 1000 $ !")
+                        if (Joueur == Joueurs[0]) {
+                            afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 1000 $ !")
+                        }
                         Joueur.transaction(1000, 1)
                     }
 
                     is CasePrison -> {
-                        afficherMessage(context, "Prison", "Vous êtes sur la case ${case.nom}. Allez directement en prison !")
+                        if (Joueur == Joueurs[0]) {
+                            afficherMessage(context, "Prison", "Vous êtes sur la case ${case.nom}. Allez directement en prison !")
+                        }
                         Joueur.pion.prison = true
                         Joueur.toursRestantsEnPrison = 2
                     }
 
-                    is CaseChance -> {
-                        afficherMessage(context, "Carte Chance", "Vous êtes sur une ${case.nom}. Piochez une carte chance !")
-                    }
-
                     is Proprietes -> {
                         if (case.proprietaire != null && case.proprietaire != Joueur) {
-                            afficherMessage(context, "Loyer", "${case.nom} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location}.")
+                            if (Joueur == Joueurs[0]) {
+                                afficherMessage(context, "Loyer", "${case.nom} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location} $.")
+                            }
 
                             if (Joueur.argent >= case.location) {
                                 Joueur.argent -= case.location
                                 case.proprietaire!!.argent += case.location
-                                afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location} à ${case.proprietaire!!.nom}.")
+                                if (Joueur == Joueurs[0]) {
+                                    afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location} $ à ${case.proprietaire!!.nom}.")
+                                }
                             } else {
-                                afficherMessage(context, "Fonds insuffisants", "Vous n'avez pas assez d'argent pour payer le loyer.")
+                                if (Joueur == Joueurs[0]) {
+                                    afficherMessage(context, "Fonds insuffisants", "Vous n'avez pas assez d'argent pour payer le loyer.")
+                                }
                             }
 
                         } else if (case.proprietaire == null) {
-                            // Boîte de dialogue personnalisée avec choix
-                            AlertDialog.Builder(context)
-                                .setTitle("Acheter ${case.nom} ?")
-                                .setMessage("Voulez-vous acheter ${case.nom} pour ${case.prix} $ ?")
-                                .setPositiveButton("Oui") { _, _ ->
-                                    if (Joueur.argent >= case.prix) {
-                                        Joueur.acheter(case.nom, case.prix)
-                                        case.proprietaire = Joueur
-                                        afficherMessage(context, "Achat réussi", "${Joueur.nom} a acheté ${case.nom} pour ${case.prix} $. Argent restant : ${Joueur.argent}.")
-                                    } else {
-                                        afficherMessage(context, "Achat refusé", "Vous n'avez pas assez d'argent pour acheter ${case.nom}.")
+                            if (Joueur == Joueurs[0]) {
+                                // Vrai joueur : boîte de dialogue
+                                AlertDialog.Builder(context)
+                                    .setTitle("Acheter ${case.nom} ?")
+                                    .setMessage("Voulez-vous acheter ${case.nom} pour ${case.prix} $ ?")
+                                    .setPositiveButton("Oui") { _, _ ->
+                                        if (Joueur.argent >= case.prix) {
+                                            Joueur.acheter(case.nom, case.prix)
+                                            case.proprietaire = Joueur
+                                            afficherMessage(
+                                                context,
+                                                "Achat réussi",
+                                                "${Joueur.nom} a acheté ${case.nom} pour ${case.prix} $. Argent restant : ${Joueur.argent}."
+                                            )
+                                        } else {
+                                            afficherMessage(
+                                                context,
+                                                "Achat refusé",
+                                                "Vous n'avez pas assez d'argent pour acheter ${case.nom}."
+                                            )
+                                        }
                                     }
+                                    .setNegativeButton("Non") { _, _ ->
+                                        afficherMessage(
+                                            context,
+                                            "Achat annulé",
+                                            "${Joueur.nom} a choisi de ne pas acheter ${case.nom}."
+                                        )
+                                    }
+                                    .show()
+                            } else {
+                                // Bot : réponse aléatoire sans affichage
+                                val decisionBot = listOf(true, false).random()
+                                if (decisionBot && Joueur.argent >= case.prix) {
+                                    Joueur.acheter(case.nom, case.prix)
+                                    case.proprietaire = Joueur
                                 }
-                                .setNegativeButton("Non") { _, _ ->
-                                    afficherMessage(context, "Achat annulé", "${Joueur.nom} a choisi de ne pas acheter ${case.nom}.")
-                                }
-                                .show()
+                                // Sinon, le bot ne fait rien
+                            }
                         }
                     }
                 }
