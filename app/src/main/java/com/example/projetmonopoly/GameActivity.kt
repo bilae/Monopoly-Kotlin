@@ -160,7 +160,17 @@ class GameActivity : AppCompatActivity() {
         while (gamestop == false) {
             for (i in 0..numBots) { //tour de chaque joueur i (0 = vraijoueur)
                 //séparation tour du vrai joueur des tours des bots
-                if (i == 0) {
+                if (i == 0) {if (vraijoueur.pion.prison) {
+                    if (vraijoueur.toursRestantsEnPrison > 0) {
+                        afficherMessage(this, "Prison", "Vous êtes en prison. Il vous reste ${vraijoueur.toursRestantsEnPrison} tour(s).")
+                        vraijoueur.toursRestantsEnPrison--
+                        continue // passe au joueur suivant
+                    } else {
+                        vraijoueur.pion.prison = false
+                        afficherMessage(this, "Prison", "Vous êtes libre ! Vous pouvez jouer.")
+                    }
+                }
+
                     BoutonLancer.setOnClickListener {
                         val resultde = vraijoueur.lancerde()
                         val drawableResource = when (resultde) {
@@ -183,6 +193,16 @@ class GameActivity : AppCompatActivity() {
                 }
                 //tours des bots
                 else {
+                    val bot = Joueurs[i]
+                    if (bot.pion.prison) {
+                        if (bot.toursRestantsEnPrison > 0) {
+                            bot.toursRestantsEnPrison--
+                            continue // passe au bot suivant
+                    } else {
+                        bot.pion.prison = false
+                    }
+                }
+
                     val resultde = Joueurs[i].lancerde()
                     val drawableResource = when (resultde) {
                         1 -> R.drawable.de1

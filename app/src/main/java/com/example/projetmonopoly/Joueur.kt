@@ -2,7 +2,7 @@ package com.example.projetmonopoly
 
 import kotlin.random.Random
 
-class Joueur(val pion : Pion, val nom : String, var argent : Int, val isbot : Boolean) {
+class Joueur(val pion : Pion, val nom : String, var argent : Int, val isbot : Boolean, var toursRestantsEnPrison: Int = 0) {
 
     fun acheter(propriete: String, prix : Int) {
         argent -= prix
