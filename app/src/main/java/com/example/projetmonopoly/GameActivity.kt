@@ -257,7 +257,7 @@ class GameActivity : AppCompatActivity() {
             if (Joueurs[i].argent < 0) nbreBotEnNegatif++
         }
 
-        gamestop = Joueurs[0].argent < 0 || nbreBotEnNegatif == Joueurs.size - 1
+        gamestop = Joueurs[0].argent <= 0 || nbreBotEnNegatif == Joueurs.size - 1
 
         if (gamestop) {
             val message = if (Joueurs[0].argent < 0) "Vous avez perdu !" else "Vous avez gagné !"
