@@ -325,6 +325,10 @@ class GameActivity : AppCompatActivity() {
 
     private fun jouerTourHumain() {
         val joueur = Joueurs[currentPlayerIndex]
+        if (joueur.argent<0) {
+            passerAuJoueurSuivant()
+            return
+        }
         if (joueur.pion.prison) {
             if (joueur.toursRestantsEnPrison > 0) {
                 afficherMessage(this, "Prison", "Vous êtes en prison. Il vous reste ${joueur.toursRestantsEnPrison} tour(s).")
