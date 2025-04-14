@@ -18,39 +18,52 @@
 
     <ImageView
         android:id="@+id/pion_vert"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@+id/boardImage"
+        android:layout_marginEnd="260dp"
+        android:layout_marginBottom="-3dp"
+        android:layout_toStartOf="@+id/bot3"
         android:src="@drawable/pion_vert"
         />
 
     <ImageView
         android:id="@+id/pion_rouge"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@+id/boardImage"
+        android:layout_marginEnd="283dp"
+        android:layout_marginBottom="-3dp"
+        android:layout_toStartOf="@+id/bot3"
         android:src="@drawable/pion_rouge" />
 
     <!-- Bots autour du plateau -->
 
     <ImageView
         android:id="@+id/pion_bleu"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@+id/boardImage"
+        android:layout_marginEnd="260dp"
+        android:layout_marginBottom="20dp"
+        android:layout_toStartOf="@+id/bot3"
         android:src="@drawable/pion_bleu" />
 
     <ImageView
         android:id="@+id/pion_jaune"
-        android:layout_width="25dp"
-        android:layout_height="25dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_alignBottom="@+id/boardImage"
-        android:layout_marginStart="0dp"
-        android:layout_marginBottom="0dp"
+        android:layout_marginEnd="283dp"
+        android:layout_marginBottom="20dp"
+        android:layout_toStartOf="@+id/bot3"
         android:src="@drawable/pion_jaune" />
 
     <TextView
         android:id="@+id/Joueur"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Joueur"
+        android:text="Joueur : 1500$"
         android:textSize="18dp"
         android:textStyle="bold"
         android:textColor="@color/primaryColor"
@@ -62,7 +75,7 @@
         android:id="@+id/bot1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Bot 1"
+        android:text="Bot 1 : 1500$"
         android:textSize="18dp"
         android:textStyle="bold"
         android:textColor="@color/primaryColor"
@@ -73,27 +86,27 @@
 
     <TextView
         android:id="@+id/bot2"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:gravity="center"
+        android:layout_width="60dp"
+        android:layout_height="70dp"
         android:layout_centerVertical="true"
-        android:layout_marginEnd="-12dp"
+        android:layout_marginEnd="-10dp"
         android:layout_toStartOf="@id/boardImage"
+        android:gravity="center"
         android:rotation="-90"
-        android:text="Bot 2"
+        android:text="Bot 2 : 1500$"
         android:textColor="@color/primaryColor"
         android:textSize="18dp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/bot3"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="70dp"
         android:layout_centerVertical="true"
-        android:layout_marginStart="-12dp"
+        android:layout_marginStart="-10dp"
         android:layout_toEndOf="@id/boardImage"
         android:rotation="90"
-        android:text="Bot 3"
+        android:text="Bot 3 : 1500$"
         android:gravity="center"
         android:textColor="@color/primaryColor"
         android:textSize="18dp"

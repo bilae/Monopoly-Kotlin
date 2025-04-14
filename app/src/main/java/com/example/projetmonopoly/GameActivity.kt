@@ -43,35 +43,183 @@ class GameActivity : AppCompatActivity() {
         BoutonLancer = findViewById(R.id.lancerDé)
 
         // Liste des positions des cases
+        val hauteurP = Plateau.height
+        val largeurP = Plateau.width
+        var PlateauX = Plateau.x
+        var PlateauY = Plateau.y
+        val tailleCase = Plateau.height.toFloat() / 8f
+
+        // Liste des positions des cases en pourcentage du plateau (X%, Y%)
+        // Objet joueur à définir plus tard dans propriétaire
         boardPositions = listOf(
-            CaseDépart(0, 0.90f, 0.90f, "Départ"),
-            Proprietes(1, 0.75f, 0.90f, "Rio", 100, 10, null),
-            Proprietes(2, 0.60f, 0.90f, "Delhi", 100, 10, null),
-            Proprietes(3, 0.45f, 0.90f, "Bangkok", 130, 15, null),
-            Proprietes(4, 0.30f, 0.90f, "Gare bleu", 100, 35, null),
-            Proprietes(5, 0.15f, 0.90f, "Caire", 150, 15, null),
-            Proprietes(6, 0.00f, 0.90f, "Madrid", 150, 15, null),
-            CaseChance(7, 0.00f, 0.75f, "Chance"),
-            Proprietes(8, 0.00f, 0.60f, "Jakarta", 170, 20, null),
-            Proprietes(9, 0.00f, 0.45f, "Berlin", 180, 20, null),
-            Proprietes(10, 0.00f, 0.30f, "Moscou", 200, 30, null),
-            Proprietes(11, 0.00f, 0.15f, "Gare orange", 150, 35, null),
-            Proprietes(12, 0.00f, 0.00f, "Toronto", 200, 30, null),
-            Proprietes(13, 0.15f, 0.00f, "Séoul", 200, 30, null),
-            CasePrison(14, 0.30f, 0.00f, "Prison"),
-            Proprietes(15, 0.45f, 0.00f, "Zurich", 250, 35, null),
-            Proprietes(16, 0.60f, 0.00f, "Riyadh", 250, 35, null),
-            Proprietes(17, 0.75f, 0.00f, "Sydney", 300, 40, null),
-            Proprietes(18, 0.90f, 0.00f, "Gare verte", 200, 35, null),
-            Proprietes(19, 0.90f, 0.15f, "Beijing", 300, 40, null),
-            Proprietes(20, 0.90f, 0.30f, "Dubai", 300, 40, null),
-            CaseChance(21, 0.90f, 0.45f, "Carte chance"),
-            Proprietes(22, 0.90f, 0.60f, "Paris", 350, 45, null),
-            Proprietes(23, 0.90f, 0.75f, "Hong Kong", 350, 50, null),
-            Proprietes(24, 0.75f, 0.75f, "Londres", 420, 70, null),
-            Proprietes(25, 0.60f, 0.75f, "Gare rouge", 250, 35, null),
-            Proprietes(26, 0.45f, 0.75f, "Tokyo", 420, 70, null),
-            Proprietes(27, 0.30f, 0.75f, "New-York", 450, 80, null)
+            //par rapport au coté gauche
+            CaseDépart(0, 0f + tailleCase / 2, 1f - tailleCase / 2, "Départ"),  // Départ
+            Proprietes(1, 0f + tailleCase / 2, 0.875f - tailleCase / 2, "Rio", 100, 10, null),
+            Proprietes(2, 0f + tailleCase / 2, 0.75f - tailleCase / 2, "Delhi", 100, 10, null),
+            Proprietes(
+                3,
+                0f + tailleCase / 2,
+                0.625f - tailleCase / 2,
+                "Bangkok",
+                130,
+                15,
+                null
+            ),
+            Proprietes(
+                4,
+                0f + tailleCase / 2,
+                0.5f - tailleCase / 2,
+                "Gare bleu",
+                100,
+                35,
+                null
+            ),
+            Proprietes(5, 0f + tailleCase / 2, 0.375f - tailleCase / 2, "Caire", 150, 15, null),
+            Proprietes(6, 0f + tailleCase / 2, 0.25f - tailleCase / 2, "Madrid", 150, 15, null),
+            CaseChance(7, 0.00f + tailleCase / 2, 0.125f - tailleCase / 2, "Chance"),
+            //par rapport au coté haut
+            Proprietes(
+                8,
+                0.125f + tailleCase / 2,
+                0.0f + tailleCase / 2,
+                "Jakarta",
+                170,
+                20,
+                null
+            ),
+            Proprietes(
+                9,
+                0.250f + tailleCase / 2,
+                0.0f + tailleCase / 2,
+                "Berlin",
+                180,
+                20,
+                null
+            ),
+            Proprietes(
+                10,
+                0.375f + tailleCase / 2,
+                0.0f + tailleCase / 2,
+                "Moscou",
+                200,
+                30,
+                null
+            ),
+            Proprietes(
+                11,
+                0.5f + tailleCase / 2,
+                0.0f + tailleCase / 2,
+                "Gare orange",
+                150,
+                35,
+                null
+            ),
+            Proprietes(
+                12,
+                0.625f + tailleCase / 2,
+                0.00f + tailleCase / 2,
+                "Toronto",
+                200,
+                30,
+                null
+            ),
+            Proprietes(
+                13,
+                0.75f + tailleCase / 2,
+                0.00f + tailleCase / 2,
+                "Séoul",
+                200,
+                30,
+                null
+            ),
+            CasePrison(14, 0.875f + tailleCase / 2, 0.00f + tailleCase / 2, "Prison"),
+            //par rapport au coté droit
+            Proprietes(
+                15,
+                1f - tailleCase / 2,
+                0.125f + tailleCase / 2,
+                "Zurich",
+                250,
+                35,
+                null
+            ),
+            Proprietes(
+                16,
+                1f - tailleCase / 2,
+                0.25f + tailleCase / 2,
+                "Riyadh",
+                250,
+                35,
+                null
+            ),
+            Proprietes(
+                17,
+                1f - tailleCase / 2,
+                0.375f + tailleCase / 2,
+                "Sydney",
+                300,
+                40,
+                null
+            ),
+            Proprietes(
+                18,
+                1f - tailleCase / 2,
+                0.5f + tailleCase / 2,
+                "Gare verte",
+                200,
+                35,
+                null
+            ),
+            Proprietes(
+                19,
+                1f - tailleCase / 2,
+                0.625f + tailleCase / 2,
+                "Beijing",
+                300,
+                40,
+                null
+            ),
+            Proprietes(20, 1f - tailleCase / 2, 0.75f + tailleCase / 2, "Dubai", 300, 40, null),
+            CaseChance(21, 1f - tailleCase / 2, 0.875f + tailleCase / 2, "Carte chance"),
+            //par rapport au coté bas
+            Proprietes(22, 0.875f - tailleCase / 2, 1 - tailleCase / 2, "Paris", 350, 45, null),
+            Proprietes(
+                23,
+                0.75f - tailleCase / 2,
+                1f - tailleCase / 2,
+                "Hong Kong",
+                350,
+                50,
+                null
+            ),
+            Proprietes(24, 0.625f - tailleCase / 2, 1f, "Londres", 420, 70, null),
+            Proprietes(
+                25,
+                0.5f - tailleCase / 2,
+                1f - tailleCase / 2,
+                "Gare rouge",
+                250,
+                35,
+                null
+            ),
+            Proprietes(
+                26,
+                0.375f - tailleCase / 2,
+                1f - tailleCase / 2,
+                "Tokyo",
+                420,
+                70,
+                null
+            ),
+            Proprietes(
+                27,
+                0.25f - tailleCase / 2,
+                1f - tailleCase / 2,
+                "New-York",
+                450,
+                80,
+                null
+            )
         )
 
         val pionViews = listOf(
@@ -211,7 +359,7 @@ class GameActivity : AppCompatActivity() {
 
     private fun jouerTourBot() {
         val bot = Joueurs[currentPlayerIndex]
-        if(bot.argent <0) {continue}
+        if(bot.argent <0) {passerAuJoueurSuivant()}
         if (bot.pion.prison) {
             if (bot.toursRestantsEnPrison > 0) {
                 bot.toursRestantsEnPrison--
