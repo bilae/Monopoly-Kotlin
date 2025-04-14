@@ -291,7 +291,7 @@ class GameActivity : AppCompatActivity() {
         pions = mutableListOf()
 
         // Pion du joueur
-        val (startX, startY) = getCasePosition(0, boardX, boardY, boardWidth, boardHeight)
+        val (startX, startY) = getCasePosition2(0, boardX, boardY, boardWidth, boardHeight)
         pions.add(
             Pion(
                 couleur = couleurs[0],
@@ -307,7 +307,7 @@ class GameActivity : AppCompatActivity() {
 
         // Pions bots
         for (i in 1..numBots) {
-            val (botX, botY) = getCasePosition(0, boardX, boardY, boardWidth, boardHeight)
+            val (botX, botY) = getCasePosition2(0, boardX, boardY, boardWidth, boardHeight)
             pions.add(
                 Pion(
                     couleur = couleurs[i],
@@ -355,7 +355,7 @@ class GameActivity : AppCompatActivity() {
         val pion = joueur.pion
         pion.case = (pion.case + resultde) % boardPositions.size
         Plateau.post {
-            val (absx, absy) = getCasePosition(pion.case)
+            val (absx, absy) = getCasePosition1(pion.case)
             pion.goto(absx, absy, findViewById(R.id.boardImage))
             joueurArriveSurCase(this, joueur, pion)
         }
@@ -388,7 +388,7 @@ class GameActivity : AppCompatActivity() {
         val pion = bot.pion
         pion.case = (pion.case + resultde) % boardPositions.size
         Plateau.post {
-            val (absx, absy) = getCasePosition(pion.case)
+            val (absx, absy) = getCasePosition1(pion.case)
             pion.goto(absx, absy, findViewById(R.id.boardImage))
             joueurArriveSurCase(this, bot, pion)
         }
@@ -418,12 +418,12 @@ class GameActivity : AppCompatActivity() {
         }
     }
 
-    private fun getCasePosition(index: Int): Pair<Float, Float> {
+    private fun getCasePosition1(index: Int): Pair<Float, Float> {
         val Plateau = findViewById<ImageView>(R.id.boardImage)
-        return getCasePosition(index, Plateau.x, Plateau.y, Plateau.width.toFloat(), Plateau.height.toFloat())
+        return getCasePosition2(index, Plateau.x, Plateau.y, Plateau.width.toFloat(), Plateau.height.toFloat())
     }
 
-    private fun getCasePosition(index: Int, boardX: Float, boardY: Float, boardWidth: Float, boardHeight: Float): Pair<Float, Float> {
+    private fun getCasePosition2(index: Int, boardX: Float, boardY: Float, boardWidth: Float, boardHeight: Float): Pair<Float, Float> {
         if (index !in boardPositions.indices) {
             Log.e("Pion", "Index de case invalide: $index")
             return Pair(boardX, boardY)
