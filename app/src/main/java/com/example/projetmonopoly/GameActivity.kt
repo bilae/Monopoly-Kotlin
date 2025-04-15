@@ -20,6 +20,10 @@ class GameActivity : AppCompatActivity() {
     private lateinit var DiceImage: ImageView
     private lateinit var BoutonLancer: Button
 
+    fun addCommand(command: Command) {
+        command.execute()
+    }
+
     fun afficherMessage(context: Context, titre: String, message: String) {
         AlertDialog.Builder(context)
             .setTitle(titre)
@@ -438,6 +442,15 @@ class GameActivity : AppCompatActivity() {
         val absY = boardY + (relY * boardHeight)
         return Pair(absX, absY)
     }
+    fun buyProperty(player: Joueur, proprietes: Proprietes) {
+        val command = BuyPropertyCommand(player, proprietes)
+        addCommand(command)
+    }
+    fun RentProperty(player: Joueur, proprietes: Proprietes) {
+        val command = RentPropertyCommand(player, proprietes)
+        addCommand(command)
+    }
+
 
     fun joueurArriveSurCase(context: Context, Joueur: Joueur, pion: Pion) {
         val tolérance = 0.05f
@@ -476,7 +489,8 @@ class GameActivity : AppCompatActivity() {
                     }
 
                     if (Joueur.argent >= case.location) {
-                        Joueur.argent -= case.location
+                        val buyCommand = RentPropertyCommand(Joueur, case)
+                        buyCommand.execute()
                         case.proprietaire!!.argent += case.location
                         if (!Joueur.isbot) {
                             afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location} $ à ${case.proprietaire!!.nom}.")
@@ -500,7 +514,8 @@ class GameActivity : AppCompatActivity() {
                             .setMessage("Voulez-vous acheter ${case.nom} pour ${case.prix} $ ?")
                             .setPositiveButton("Oui") { _, _ ->
                                 if (Joueur.argent >= case.prix) {
-                                    Joueur.acheter(case.nom, case.prix)
+                                    val buyCommand = BuyPropertyCommand(Joueur, case)
+                                    buyCommand.execute()
                                     JoueurView.text = "${Joueur.nom} : ${Joueur.argent}$"
                                     case.proprietaire = Joueur
                                     afficherMessage(
@@ -529,7 +544,8 @@ class GameActivity : AppCompatActivity() {
                     } else {
                         // Logique pour les bots
                         if (Joueur.argent >= case.prix && (0..1).random() == 1) {
-                            Joueur.acheter(case.nom, case.prix)
+                            val buyCommand = BuyPropertyCommand(Joueur, case)
+                            buyCommand.execute()
                             val index = Joueurs.indexOf(Joueur)-1
                             botViews[index].text = "${Joueur.nom} : ${Joueur.argent}$"
                             case.proprietaire = Joueur
@@ -539,11 +555,6 @@ class GameActivity : AppCompatActivity() {
                 } else {
                     passerAuJoueurSuivant()
                 }
-            }
-
-            is CaseChance -> {
-                // Logique pour les cartes chance
-                passerAuJoueurSuivant()
             }
 
             else -> {
