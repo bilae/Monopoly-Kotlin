@@ -453,7 +453,8 @@ class GameActivity : AppCompatActivity() {
                     }
 
                     if (Joueur.argent >= case.location) {
-                        Joueur.argent -= case.location
+                        val commandeLocation = RentPropertyCommand(Joueur, case)
+                        commandeLocation.execute()
                         case.proprietaire!!.argent += case.location
                         if (!Joueur.isbot) {
                             afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location} $ à ${case.proprietaire!!.nom}.")
@@ -471,7 +472,8 @@ class GameActivity : AppCompatActivity() {
                             .setMessage("Voulez-vous acheter ${case.nom} pour ${case.prix} $ ?")
                             .setPositiveButton("Oui") { _, _ ->
                                 if (Joueur.argent >= case.prix) {
-                                    Joueur.acheter(case.nom, case.prix)
+                                    val commandeAchat = BuyPropertyCommand(Joueur, case)
+                                    commandeAchat.execute()
                                     case.proprietaire = Joueur
                                     afficherMessage(
                                         context,
@@ -499,7 +501,8 @@ class GameActivity : AppCompatActivity() {
                     } else {
                         // Logique pour les bots
                         if (Joueur.argent >= case.prix && (0..1).random() == 1) {
-                            Joueur.acheter(case.nom, case.prix)
+                            val commandeAchatBot = BuyPropertyCommand(Joueur, case)
+                            commandeAchatBot.execute()
                             case.proprietaire = Joueur
                         }
                         passerAuJoueurSuivant()
