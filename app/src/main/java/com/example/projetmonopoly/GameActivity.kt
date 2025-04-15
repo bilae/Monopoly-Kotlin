@@ -1,6 +1,7 @@
 package com.example.projetmonopoly
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -414,7 +415,11 @@ class GameActivity : AppCompatActivity() {
 
         if (gamestop) {
             val message = if (Joueurs[0].argent < 0) "Vous avez perdu !" else "Vous avez gagné !"
-            afficherMessage(this, "Fin de partie", message)
+            // Lancer l'activité de fin avec le message
+            val intent = Intent(this, EndActivity::class.java)
+            intent.putExtra("resultatPartie", message)
+            startActivity(intent)
+            finish() // pour fermer l'activité actuelle
         }
     }
 
@@ -437,13 +442,21 @@ class GameActivity : AppCompatActivity() {
     fun joueurArriveSurCase(context: Context, Joueur: Joueur, pion: Pion) {
         val tolérance = 0.05f
         val case = boardPositions[pion.case]
+        val JoueurView = findViewById<TextView>(R.id.Joueur)
+        val botViews = listOf(
+            findViewById<TextView>(R.id.bot1),
+            findViewById<TextView>(R.id.bot2),
+            findViewById<TextView>(R.id.bot3)
+        )
+
 
         when (case) {
             is CaseDépart -> {
                 if (!Joueur.isbot) {
                     afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 1000 $ !")
                 }
-                Joueur.transaction(1000, 1)
+                Joueur.transaction(100, 1)
+                JoueurView.text = "${Joueur.nom} : ${Joueur.argent}$"
                 passerAuJoueurSuivant()
             }
 
@@ -467,10 +480,16 @@ class GameActivity : AppCompatActivity() {
                         case.proprietaire!!.argent += case.location
                         if (!Joueur.isbot) {
                             afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location} $ à ${case.proprietaire!!.nom}.")
+                            JoueurView.text = "${Joueur.nom} : ${Joueur.argent}$"
+                        }
+                        else {
+                            val index = Joueurs.indexOf(Joueur)-1
+                            botViews[index].text = "${Joueur.nom} : ${Joueur.argent}$"
                         }
                     } else {
                         if (!Joueur.isbot) {
                             afficherMessage(context, "Fonds insuffisants", "Vous n'avez pas assez d'argent pour payer le loyer.")
+                            Joueur.argent = 0
                         }
                     }
                     passerAuJoueurSuivant()
@@ -482,6 +501,7 @@ class GameActivity : AppCompatActivity() {
                             .setPositiveButton("Oui") { _, _ ->
                                 if (Joueur.argent >= case.prix) {
                                     Joueur.acheter(case.nom, case.prix)
+                                    JoueurView.text = "${Joueur.nom} : ${Joueur.argent}$"
                                     case.proprietaire = Joueur
                                     afficherMessage(
                                         context,
@@ -510,6 +530,8 @@ class GameActivity : AppCompatActivity() {
                         // Logique pour les bots
                         if (Joueur.argent >= case.prix && (0..1).random() == 1) {
                             Joueur.acheter(case.nom, case.prix)
+                            val index = Joueurs.indexOf(Joueur)-1
+                            botViews[index].text = "${Joueur.nom} : ${Joueur.argent}$"
                             case.proprietaire = Joueur
                         }
                         passerAuJoueurSuivant()
