@@ -1,6 +1,7 @@
 package com.example.projetmonopoly
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
         val botOptions = arrayOf("1 Bot", "2 Bots", "3 Bots")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, botOptions)
         spinnerBots.adapter = adapter
+        Log.d("GameActivity", "test1")
 
         btnStartGame.setOnClickListener {
             val selectedBots = spinnerBots.selectedItem.toString().split(" ")[0].toInt()

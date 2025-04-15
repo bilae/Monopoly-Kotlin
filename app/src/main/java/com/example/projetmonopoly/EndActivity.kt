@@ -20,7 +20,7 @@ class EndActivity : AppCompatActivity() {
         resultTextView.text = if (hasWon) "Gagné !" else "Perdu !"
 
         buttonReplay.setOnClickListener {
-            val intent = Intent(this, GameActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
         }
