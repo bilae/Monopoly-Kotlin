@@ -1,7 +1,6 @@
 package com.example.projetmonopoly
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -19,10 +18,7 @@ class GameActivity : AppCompatActivity() {
     private lateinit var Plateau:ImageView
     private lateinit var DiceImage: ImageView
     private lateinit var BoutonLancer: Button
-
-    fun addCommand(command: Command) {
-        command.execute()
-    }
+    var nbreBotEnNegatif = 0
 
     fun afficherMessage(context: Context, titre: String, message: String) {
         AlertDialog.Builder(context)
@@ -47,24 +43,18 @@ class GameActivity : AppCompatActivity() {
         DiceImage = findViewById(R.id.de1)
         BoutonLancer = findViewById(R.id.lancerDé)
 
-        // Liste des positions des cases
-        val hauteurP = Plateau.height
-        val largeurP = Plateau.width
-        var PlateauX = Plateau.x
-        var PlateauY = Plateau.y
-        val tailleCase = Plateau.height.toFloat() / 8f
 
         // Liste des positions des cases en pourcentage du plateau (X%, Y%)
         // Objet joueur à définir plus tard dans propriétaire
         boardPositions = listOf(
             //par rapport au coté gauche
-            CaseDépart(0, 0f + tailleCase / 2, 1f - tailleCase / 2, "Départ"),  // Départ
-            Proprietes(1, 0f + tailleCase / 2, 0.875f - tailleCase / 2, "Rio", 100, 10, null),
-            Proprietes(2, 0f + tailleCase / 2, 0.75f - tailleCase / 2, "Delhi", 100, 10, null),
+            CaseDépart(0, 0f, 0.875f, "Départ"),  // Départ
+            Proprietes(1, 0f, 0.75f, "Rio", 100, 10, null),
+            Proprietes(2, 0f, 0.625f, "Delhi", 100, 10, null),
             Proprietes(
                 3,
-                0f + tailleCase / 2,
-                0.625f - tailleCase / 2,
+                0f,
+                0.5f,
                 "Bangkok",
                 130,
                 15,
@@ -72,21 +62,21 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 4,
-                0f + tailleCase / 2,
-                0.5f - tailleCase / 2,
+                0f,
+                0.375f,
                 "Gare bleu",
                 100,
                 35,
                 null
             ),
-            Proprietes(5, 0f + tailleCase / 2, 0.375f - tailleCase / 2, "Caire", 150, 15, null),
-            Proprietes(6, 0f + tailleCase / 2, 0.25f - tailleCase / 2, "Madrid", 150, 15, null),
-            CaseChance(7, 0.00f + tailleCase / 2, 0.125f - tailleCase / 2, "Chance"),
+            Proprietes(5, 0f, 0.25f, "Caire", 150, 15, null),
+            Proprietes(6, 0f, 0.125f, "Madrid", 150, 15, null),
+            CaseChance(7, 0.00f, 0.0f, "Chance"),
             //par rapport au coté haut
             Proprietes(
                 8,
-                0.125f + tailleCase / 2,
-                0.0f + tailleCase / 2,
+                0.125f,
+                0.0f,
                 "Jakarta",
                 170,
                 20,
@@ -94,8 +84,8 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 9,
-                0.250f + tailleCase / 2,
-                0.0f + tailleCase / 2,
+                0.250f,
+                0.0f,
                 "Berlin",
                 180,
                 20,
@@ -103,8 +93,8 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 10,
-                0.375f + tailleCase / 2,
-                0.0f + tailleCase / 2,
+                0.375f,
+                0.0f,
                 "Moscou",
                 200,
                 30,
@@ -112,8 +102,8 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 11,
-                0.5f + tailleCase / 2,
-                0.0f + tailleCase / 2,
+                0.5f,
+                0.0f,
                 "Gare orange",
                 150,
                 35,
@@ -121,8 +111,8 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 12,
-                0.625f + tailleCase / 2,
-                0.00f + tailleCase / 2,
+                0.625f,
+                0.00f,
                 "Toronto",
                 200,
                 30,
@@ -130,19 +120,19 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 13,
-                0.75f + tailleCase / 2,
-                0.00f + tailleCase / 2,
+                0.75f,
+                0.00f,
                 "Séoul",
                 200,
                 30,
                 null
             ),
-            CasePrison(14, 0.875f + tailleCase / 2, 0.00f + tailleCase / 2, "Prison"),
+            CasePrison(14, 0.875f, 0.00f, "Prison"),
             //par rapport au coté droit
             Proprietes(
                 15,
-                1f - tailleCase / 2,
-                0.125f + tailleCase / 2,
+                0.875f,
+                0.125f,
                 "Zurich",
                 250,
                 35,
@@ -150,8 +140,8 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 16,
-                1f - tailleCase / 2,
-                0.25f + tailleCase / 2,
+                0.875f,
+                0.25f,
                 "Riyadh",
                 250,
                 35,
@@ -159,8 +149,8 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 17,
-                1f - tailleCase / 2,
-                0.375f + tailleCase / 2,
+                0.875f,
+                0.375f,
                 "Sydney",
                 300,
                 40,
@@ -168,8 +158,8 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 18,
-                1f - tailleCase / 2,
-                0.5f + tailleCase / 2,
+                0.875f,
+                0.5f,
                 "Gare verte",
                 200,
                 35,
@@ -177,31 +167,31 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 19,
-                1f - tailleCase / 2,
-                0.625f + tailleCase / 2,
+                0.875f,
+                0.625f,
                 "Beijing",
                 300,
                 40,
                 null
             ),
-            Proprietes(20, 1f - tailleCase / 2, 0.75f + tailleCase / 2, "Dubai", 300, 40, null),
-            CaseChance(21, 1f - tailleCase / 2, 0.875f + tailleCase / 2, "Carte chance"),
+            Proprietes(20, 0.875f , 0.75f, "Dubai", 300, 40, null),
+            CaseChance(21, 0.875f, 0.875f, "Carte chance"),
             //par rapport au coté bas
-            Proprietes(22, 0.875f - tailleCase / 2, 1 - tailleCase / 2, "Paris", 350, 45, null),
+            Proprietes(22, 0.75f, 0.875f, "Paris", 350, 45, null),
             Proprietes(
                 23,
-                0.75f - tailleCase / 2,
-                1f - tailleCase / 2,
+                0.625f,
+                0.875f,
                 "Hong Kong",
                 350,
                 50,
                 null
             ),
-            Proprietes(24, 0.625f - tailleCase / 2, 1f, "Londres", 420, 70, null),
+            Proprietes(24, 0.5f, 0.875f, "Londres", 420, 70, null),
             Proprietes(
                 25,
-                0.5f - tailleCase / 2,
-                1f - tailleCase / 2,
+                0.375f,
+                0.875f,
                 "Gare rouge",
                 250,
                 35,
@@ -209,8 +199,8 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 26,
-                0.375f - tailleCase / 2,
-                1f - tailleCase / 2,
+                0.25f,
+                0.875f,
                 "Tokyo",
                 420,
                 70,
@@ -218,8 +208,8 @@ class GameActivity : AppCompatActivity() {
             ),
             Proprietes(
                 27,
-                0.25f - tailleCase / 2,
-                1f - tailleCase / 2,
+                0.125f,
+                0.875f,
                 "New-York",
                 450,
                 80,
@@ -330,10 +320,6 @@ class GameActivity : AppCompatActivity() {
 
     private fun jouerTourHumain() {
         val joueur = Joueurs[currentPlayerIndex]
-        if (joueur.argent<0) {
-            passerAuJoueurSuivant()
-            return
-        }
         if (joueur.pion.prison) {
             if (joueur.toursRestantsEnPrison > 0) {
                 afficherMessage(this, "Prison", "Vous êtes en prison. Il vous reste ${joueur.toursRestantsEnPrison} tour(s).")
@@ -368,7 +354,7 @@ class GameActivity : AppCompatActivity() {
 
     private fun jouerTourBot() {
         val bot = Joueurs[currentPlayerIndex]
-        if(bot.argent <0) {passerAuJoueurSuivant()}
+        if(bot.argent <=0) {passerAuJoueurSuivant()}
         if (bot.pion.prison) {
             if (bot.toursRestantsEnPrison > 0) {
                 bot.toursRestantsEnPrison--
@@ -410,7 +396,6 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun verifierFinDePartie() {
-        var nbreBotEnNegatif = 0
         for (i in 1 until Joueurs.size) {
             if (Joueurs[i].argent < 0) nbreBotEnNegatif++
         }
@@ -419,11 +404,7 @@ class GameActivity : AppCompatActivity() {
 
         if (gamestop) {
             val message = if (Joueurs[0].argent < 0) "Vous avez perdu !" else "Vous avez gagné !"
-            // Lancer l'activité de fin avec le message
-            val intent = Intent(this, EndActivity::class.java)
-            intent.putExtra("resultatPartie", message)
-            startActivity(intent)
-            finish() // pour fermer l'activité actuelle
+            afficherMessage(this, "Fin de partie", message)
         }
     }
 
@@ -442,34 +423,17 @@ class GameActivity : AppCompatActivity() {
         val absY = boardY + (relY * boardHeight)
         return Pair(absX, absY)
     }
-    fun buyProperty(player: Joueur, proprietes: Proprietes) {
-        val command = BuyPropertyCommand(player, proprietes)
-        addCommand(command)
-    }
-    fun RentProperty(player: Joueur, proprietes: Proprietes) {
-        val command = RentPropertyCommand(player, proprietes)
-        addCommand(command)
-    }
-
 
     fun joueurArriveSurCase(context: Context, Joueur: Joueur, pion: Pion) {
         val tolérance = 0.05f
         val case = boardPositions[pion.case]
-        val JoueurView = findViewById<TextView>(R.id.Joueur)
-        val botViews = listOf(
-            findViewById<TextView>(R.id.bot1),
-            findViewById<TextView>(R.id.bot2),
-            findViewById<TextView>(R.id.bot3)
-        )
-
 
         when (case) {
             is CaseDépart -> {
                 if (!Joueur.isbot) {
                     afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 1000 $ !")
                 }
-                Joueur.transaction(100, 1)
-                JoueurView.text = "${Joueur.nom} : ${Joueur.argent}$"
+                Joueur.transaction(1000, 1)
                 passerAuJoueurSuivant()
             }
 
@@ -489,21 +453,14 @@ class GameActivity : AppCompatActivity() {
                     }
 
                     if (Joueur.argent >= case.location) {
-                        val buyCommand = RentPropertyCommand(Joueur, case)
-                        buyCommand.execute()
+                        Joueur.argent -= case.location
                         case.proprietaire!!.argent += case.location
                         if (!Joueur.isbot) {
                             afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location} $ à ${case.proprietaire!!.nom}.")
-                            JoueurView.text = "${Joueur.nom} : ${Joueur.argent}$"
-                        }
-                        else {
-                            val index = Joueurs.indexOf(Joueur)-1
-                            botViews[index].text = "${Joueur.nom} : ${Joueur.argent}$"
                         }
                     } else {
                         if (!Joueur.isbot) {
                             afficherMessage(context, "Fonds insuffisants", "Vous n'avez pas assez d'argent pour payer le loyer.")
-                            Joueur.argent = 0
                         }
                     }
                     passerAuJoueurSuivant()
@@ -514,9 +471,7 @@ class GameActivity : AppCompatActivity() {
                             .setMessage("Voulez-vous acheter ${case.nom} pour ${case.prix} $ ?")
                             .setPositiveButton("Oui") { _, _ ->
                                 if (Joueur.argent >= case.prix) {
-                                    val buyCommand = BuyPropertyCommand(Joueur, case)
-                                    buyCommand.execute()
-                                    JoueurView.text = "${Joueur.nom} : ${Joueur.argent}$"
+                                    Joueur.acheter(case.nom, case.prix)
                                     case.proprietaire = Joueur
                                     afficherMessage(
                                         context,
@@ -544,10 +499,7 @@ class GameActivity : AppCompatActivity() {
                     } else {
                         // Logique pour les bots
                         if (Joueur.argent >= case.prix && (0..1).random() == 1) {
-                            val buyCommand = BuyPropertyCommand(Joueur, case)
-                            buyCommand.execute()
-                            val index = Joueurs.indexOf(Joueur)-1
-                            botViews[index].text = "${Joueur.nom} : ${Joueur.argent}$"
+                            Joueur.acheter(case.nom, case.prix)
                             case.proprietaire = Joueur
                         }
                         passerAuJoueurSuivant()
@@ -555,6 +507,11 @@ class GameActivity : AppCompatActivity() {
                 } else {
                     passerAuJoueurSuivant()
                 }
+            }
+
+            is CaseChance -> {
+                // Logique pour les cartes chance
+                passerAuJoueurSuivant()
             }
 
             else -> {
