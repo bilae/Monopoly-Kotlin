@@ -9,13 +9,16 @@ interface Command {
 
 class BuyPropertyCommand(val joueur : Joueur, val proprietes: Proprietes) : Command {
     override fun execute() {
-        joueur.acheter(proprietes.nom,proprietes.prix)
+        joueur.argent -=proprietes.prix
+        proprietes.proprietaire = joueur
+
     }
 }
 
 class RentPropertyCommand(val joueur : Joueur, val proprietes: Proprietes) : Command {
     override fun execute() {
-        joueur.acheter(proprietes.nom,proprietes.location)
+        joueur.argent -=proprietes.prix
+        proprietes.proprietaire!!.argent += proprietes.location
     }
 }
 

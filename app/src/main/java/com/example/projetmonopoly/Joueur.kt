@@ -4,9 +4,6 @@ import kotlin.random.Random
 
 class Joueur(val pion : Pion, val nom : String, var argent : Int, val isbot : Boolean, var toursRestantsEnPrison: Int = 0) {
 
-    fun acheter(propriete: String, prix : Int) {
-        argent -= prix
-    }
 
     fun lancerde() : Int {
         return Random.nextInt(1,7) // génère un nbre entre 1 et 6
