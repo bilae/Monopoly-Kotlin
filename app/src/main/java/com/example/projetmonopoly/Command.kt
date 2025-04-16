@@ -17,7 +17,7 @@ class BuyPropertyCommand(val joueur : Joueur, val proprietes: Proprietes) : Comm
 
 class RentPropertyCommand(val joueur : Joueur, val proprietes: Proprietes) : Command {
     override fun execute() {
-        joueur.argent -=proprietes.prix
+        joueur.argent -=proprietes.location
         proprietes.proprietaire!!.argent += proprietes.location
     }
 }

@@ -1,6 +1,7 @@
 package com.example.projetmonopoly
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -8,8 +9,11 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
+import GameObserver
+import GameObservable
+import android.view.View
 
-class GameActivity : AppCompatActivity() {
+class GameActivity : AppCompatActivity(), GameObservable {
     private var currentPlayerIndex = 0
     private lateinit var Joueurs: MutableList<Joueur>
     private lateinit var boardPositions: List<Case>
@@ -18,8 +22,24 @@ class GameActivity : AppCompatActivity() {
     private lateinit var Plateau:ImageView
     private lateinit var DiceImage: ImageView
     private lateinit var BoutonLancer: Button
+
     var nbreBotEnNegatif = 0
 
+    private val observers = mutableListOf<GameObserver>()
+
+    override fun addObserver(observer: GameObserver) {
+        observers.add(observer)
+    }
+
+    override fun removeObserver(observer: GameObserver) {
+        observers.remove(observer)
+    }
+
+    override fun notifyObservers(event: String) {
+        for (observer in observers) {
+            observer.onGameEvent(event)
+        }
+    }
     fun afficherMessage(context: Context, titre: String, message: String) {
         AlertDialog.Builder(context)
             .setTitle(titre)
@@ -66,9 +86,9 @@ class GameActivity : AppCompatActivity() {
             Joueurs.add(Joueur(pions[0], "Joueur", 1500, isbot = false))
 
             for (i in 1..numBots) {
-                Joueurs.add(Joueur(pions[i], "BOT$i", 1500, isbot = true))
+                Joueurs.add(Joueur(pions[i], "BOT$i", 100, isbot = true))
             }
-
+            addObserver(BotMortObserver(Joueurs))
             // Afficher uniquement les bons pions et bots
             for (i in pionViews.indices) {
                 pionViews[i].visibility = if (i < numBots + 1) ImageView.VISIBLE else ImageView.INVISIBLE
@@ -185,7 +205,11 @@ class GameActivity : AppCompatActivity() {
 
     private fun jouerTourBot() {
         val bot = Joueurs[currentPlayerIndex]
-        if(bot.argent <=0) {passerAuJoueurSuivant()}
+        if(bot.argent <=0) {
+            this.notifyObservers("bot_mort_$currentPlayerIndex")
+            /*Views[currentPlayerIndex].visibility = TextView.INVISIBLE*/
+            passerAuJoueurSuivant()
+        }
         if (bot.pion.prison) {
             if (bot.toursRestantsEnPrison > 0) {
                 bot.toursRestantsEnPrison--
@@ -222,22 +246,41 @@ class GameActivity : AppCompatActivity() {
 
         if (currentPlayerIndex > 0 && !gamestop) {
             // C'est au tour d'un bot
-            jouerTourBot()
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                jouerTourBot()
+            }, 1250)
         }
     }
 
     private fun verifierFinDePartie() {
+        var nbreBotEnNegatif = 0
+
+        // Comptabiliser les bots en négatif
         for (i in 1 until Joueurs.size) {
-            if (Joueurs[i].argent < 0) nbreBotEnNegatif++
+            if (Joueurs[i].argent <= 0) {
+                nbreBotEnNegatif++
+            }
         }
 
-        gamestop = Joueurs[0].argent <= 0 || nbreBotEnNegatif == Joueurs.size - 1
-
-        if (gamestop) {
-            val message = if (Joueurs[0].argent < 0) "Vous avez perdu !" else "Vous avez gagné !"
-            afficherMessage(this, "Fin de partie", message)
+        // Si l'argent du joueur humain (Joueur[0]) est inférieur ou égal à 0, il perd
+        if (Joueurs[0].argent <= 0) {
+            gamestop = true
+            val intent = Intent(this, EndActivity::class.java)
+            intent.putExtra("resultatPartie", "Vous avez perdu !")
+            startActivity(intent)
+            finish() // Fermeture de l'activité actuelle
+        }
+        // Si tous les bots sont en négatif, c'est la victoire du joueur humain
+        else if (nbreBotEnNegatif == Joueurs.size - 1) {
+            gamestop = true
+            val intent = Intent(this, EndActivity::class.java)
+            intent.putExtra("resultatPartie", "Vous avez gagné !")
+            startActivity(intent)
+            finish() // Fermeture de l'activité actuelle
         }
     }
+
+
 
     private fun getCasePosition1(index: Int): Pair<Float, Float> {
         val Plateau = findViewById<ImageView>(R.id.boardImage)
@@ -256,15 +299,21 @@ class GameActivity : AppCompatActivity() {
     }
 
     fun joueurArriveSurCase(context: Context, Joueur: Joueur, pion: Pion) {
-        val tolérance = 0.05f
         val case = boardPositions[pion.case]
+        val Views = listOf(
+            findViewById<TextView>(R.id.Joueur),
+            findViewById<TextView>(R.id.bot1),
+            findViewById<TextView>(R.id.bot2),
+            findViewById<TextView>(R.id.bot3)
+        )
 
         when (case) {
             is CaseDépart -> {
                 if (!Joueur.isbot) {
-                    afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 1000 $ !")
+                    afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 100 $ !")
                 }
-                Joueur.transaction(1000, 1)
+                Joueur.transaction(100, 1)
+                Joueur.MettreAJourArgent(Views, Joueurs)
                 passerAuJoueurSuivant()
             }
 
@@ -286,6 +335,7 @@ class GameActivity : AppCompatActivity() {
                     if (Joueur.argent >= case.location) {
                         val commandeLocation = RentPropertyCommand(Joueur, case)
                         commandeLocation.execute()
+                        Joueur.MettreAJourArgent(Views, Joueurs)
                         if (!Joueur.isbot) {
                             afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location} $ à ${case.proprietaire!!.nom}.")
                         }
@@ -293,6 +343,8 @@ class GameActivity : AppCompatActivity() {
                     } else {
                         if (!Joueur.isbot) {
                             afficherMessage(context, "Fonds insuffisants", "Vous n'avez pas assez d'argent pour payer le loyer.")
+                            Joueur.argent = 0
+                            Joueur.MettreAJourArgent(Views, Joueurs)
                         }
                     }
                     passerAuJoueurSuivant()
@@ -317,6 +369,7 @@ class GameActivity : AppCompatActivity() {
                                         "Vous n'avez pas assez d'argent pour acheter ${case.nom}."
                                     )
                                 }
+                                Joueur.MettreAJourArgent(Views, Joueurs)
                                 passerAuJoueurSuivant()
                             }
                             .setNegativeButton("Non") { _, _ ->
@@ -333,6 +386,7 @@ class GameActivity : AppCompatActivity() {
                         if (Joueur.argent >= case.prix && (0..1).random() == 1) {
                             val commandeAchatBot = BuyPropertyCommand(Joueur, case)
                             commandeAchatBot.execute()
+                            Joueur.MettreAJourArgent(Views, Joueurs)
                         }
                         passerAuJoueurSuivant()
                     }
@@ -343,6 +397,17 @@ class GameActivity : AppCompatActivity() {
 
             is CaseChance -> {
                 // Logique pour les cartes chance
+                val chanceSet = listOf(
+                    { Joueur.argent += 100 },
+                    { Joueur.argent -= 50 },
+                    { Joueur.argent -= 200 }
+                )
+
+                // On tire une carte au hasard
+                val actionChance = chanceSet.random()
+                actionChance() // On applique l'effet de la carte
+                afficherMessage(context, "Carte chance", "${Joueur.nom} a maintenant ${Joueur.argent}")
+                Joueur.MettreAJourArgent(Views, Joueurs)
                 passerAuJoueurSuivant()
             }
 
