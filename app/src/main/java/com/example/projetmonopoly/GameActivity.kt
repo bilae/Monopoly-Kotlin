@@ -53,7 +53,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
         setContentView(R.layout.activity_game)
 
         val numBots = intent.getIntExtra("NUM_BOTS", 1)
-        val botViews = listOf(
+        var botViews = mutableListOf(
             findViewById<TextView>(R.id.bot1),
             findViewById<TextView>(R.id.bot2),
             findViewById<TextView>(R.id.bot3)
@@ -88,7 +88,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
             for (i in 1..numBots) {
                 Joueurs.add(Joueur(pions[i], "BOT$i", 100, isbot = true))
             }
-            addObserver(BotMortObserver(Joueurs))
+            addObserver(BotMortObserver(Joueurs, botViews))
             // Afficher uniquement les bons pions et bots
             for (i in pionViews.indices) {
                 pionViews[i].visibility = if (i < numBots + 1) ImageView.VISIBLE else ImageView.INVISIBLE
@@ -116,14 +116,16 @@ class GameActivity : AppCompatActivity(), GameObservable {
 
 
         // Gestion du clic sur le bouton de lancer de dé
-        BoutonLancer.setOnClickListener {
-            if (currentPlayerIndex == 0) { // Tour du joueur humain
+        if (currentPlayerIndex == 0) { // Tour du joueur humain
+            BoutonLancer.isClickable = true
+            BoutonLancer.setOnClickListener {
                 jouerTourHumain()
             }
         }
 
         // Commencer le jeu avec le premier bot si c'est son tour
         if (currentPlayerIndex > 0) {
+            BoutonLancer.isClickable = false
             jouerTourBot()
         }
     }
@@ -207,8 +209,8 @@ class GameActivity : AppCompatActivity(), GameObservable {
         val bot = Joueurs[currentPlayerIndex]
         if(bot.argent <=0) {
             this.notifyObservers("bot_mort_$currentPlayerIndex")
-            /*Views[currentPlayerIndex].visibility = TextView.INVISIBLE*/
             passerAuJoueurSuivant()
+            return
         }
         if (bot.pion.prison) {
             if (bot.toursRestantsEnPrison > 0) {
@@ -256,25 +258,26 @@ class GameActivity : AppCompatActivity(), GameObservable {
         var nbreBotEnNegatif = 0
 
         // Comptabiliser les bots en négatif
-        for (i in 1 until Joueurs.size) {
+        for (i in 1 .. Joueurs.size - 1) {
             if (Joueurs[i].argent <= 0) {
                 nbreBotEnNegatif++
             }
         }
 
-        // Si l'argent du joueur humain (Joueur[0]) est inférieur ou égal à 0, il perd
-        if (Joueurs[0].argent <= 0) {
-            gamestop = true
-            val intent = Intent(this, EndActivity::class.java)
-            intent.putExtra("resultatPartie", "Vous avez perdu !")
-            startActivity(intent)
-            finish() // Fermeture de l'activité actuelle
-        }
         // Si tous les bots sont en négatif, c'est la victoire du joueur humain
-        else if (nbreBotEnNegatif == Joueurs.size - 1) {
+        if (nbreBotEnNegatif == Joueurs.size - 1) {
             gamestop = true
             val intent = Intent(this, EndActivity::class.java)
             intent.putExtra("resultatPartie", "Vous avez gagné !")
+            startActivity(intent)
+            finish() // Fermeture de l'activité actuelle
+        }
+
+        // Si l'argent du joueur humain (Joueur[0]) est inférieur ou égal à 0, il perd
+        else if (Joueurs[0].argent <= 0) {
+            gamestop = true
+            val intent = Intent(this, EndActivity::class.java)
+            intent.putExtra("resultatPartie", "Vous avez perdu !")
             startActivity(intent)
             finish() // Fermeture de l'activité actuelle
         }
@@ -310,7 +313,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
         when (case) {
             is CaseDépart -> {
                 if (!Joueur.isbot) {
-                    afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 100 $ !")
+                    afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 100$ !")
                 }
                 Joueur.transaction(100, 1)
                 Joueur.MettreAJourArgent(Views, Joueurs)
@@ -329,16 +332,15 @@ class GameActivity : AppCompatActivity(), GameObservable {
             is Proprietes -> {
                 if (case.proprietaire != null && case.proprietaire != Joueur) {
                     if (!Joueur.isbot) {
-                        afficherMessage(context, "Loyer", "${case.nom} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location} $.")
+                        afficherMessage(context, "Loyer", "${case.nom} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location}$.")
                     }
 
                     if (Joueur.argent >= case.location) {
                         val commandeLocation = RentPropertyCommand(Joueur, case)
                         commandeLocation.execute()
                         Joueur.MettreAJourArgent(Views, Joueurs)
-                        if (!Joueur.isbot) {
-                            afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location} $ à ${case.proprietaire!!.nom}.")
-                        }
+                        afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location}$ à ${case.proprietaire!!.nom}.")
+
                         
                     } else {
                         if (!Joueur.isbot) {
@@ -352,7 +354,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
                     if (!Joueur.isbot) {
                         AlertDialog.Builder(context)
                             .setTitle("Acheter ${case.nom} ?")
-                            .setMessage("Voulez-vous acheter ${case.nom} pour ${case.prix} $ ?")
+                            .setMessage("Voulez-vous acheter ${case.nom} pour ${case.prix}$ ?")
                             .setPositiveButton("Oui") { _, _ ->
                                 if (Joueur.argent >= case.prix) {
                                     val commandeAchat = BuyPropertyCommand(Joueur, case)
@@ -360,7 +362,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
                                     afficherMessage(
                                         context,
                                         "Achat réussi",
-                                        "${Joueur.nom} a acheté ${case.nom} pour ${case.prix} $. Argent restant : ${Joueur.argent}."
+                                        "${Joueur.nom} a acheté ${case.nom} pour ${case.prix}$. Argent restant : ${Joueur.argent}$."
                                     )
                                 } else {
                                     afficherMessage(
@@ -406,7 +408,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
                 // On tire une carte au hasard
                 val actionChance = chanceSet.random()
                 actionChance() // On applique l'effet de la carte
-                afficherMessage(context, "Carte chance", "${Joueur.nom} a maintenant ${Joueur.argent}")
+                afficherMessage(context, "Carte chance", "${Joueur.nom} a maintenant ${Joueur.argent}$")
                 Joueur.MettreAJourArgent(Views, Joueurs)
                 passerAuJoueurSuivant()
             }
