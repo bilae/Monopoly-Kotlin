@@ -82,7 +82,7 @@ object Casesingleton {
             30,
             null
         ),
-        CasePrison(14, 0.875f, 0.00f, "Prison"),
+        CasePrison,
         //par rapport au coté droit
         Proprietes(
             15,

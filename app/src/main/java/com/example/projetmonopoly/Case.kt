@@ -13,19 +13,17 @@ open class Case(
 
 class Proprietes(index: Int , xpos : Float, ypos : Float, nom : String, val prix : Int, var location : Int,
                  var proprietaire :Joueur? = null) : Case(index, xpos, ypos, nom){
-    fun acheter(argent : Int, prix : Int, joueur : String){
+                 }
 
-    }
-}
-
-class CasePrison(index: Int , xpos : Float, ypos : Float,nom : String) : Case(index, xpos, ypos,nom){
-    fun estenprison(jours_restants : Int){
-    }
-}
+object CasePrison : Case(
+    index = 14,
+    xpos = 0.875f,
+    ypos = 0.00f,
+    nom = "Prison"
+)
 
 class CaseChance(index: Int , xpos : Float, ypos : Float,nom : String) : Case(index, xpos, ypos,nom){
-    fun piochercarte(){
-    }
+
 }
 
 class CaseDépart(index: Int , xpos : Float, ypos : Float,nom : String) : Case(index, xpos, ypos,nom){
