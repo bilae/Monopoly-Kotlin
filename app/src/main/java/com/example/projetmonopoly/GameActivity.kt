@@ -331,13 +331,13 @@ class GameActivity : AppCompatActivity(), GameObservable {
             is CaseDépart -> {
                 if (!Joueur.isbot) {
                     android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                        afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 100$ !")
-                        Joueur.transaction(100, 1)
+                        afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.NAMECASE}. Vous recevez 100$ !")
+                        Joueur.transaction(CaseDépart.GAIN, 1)
                         Joueur.MettreAJourArgent(Views, Joueurs)
                         attendrePuisPasserAuJoueurSuivant()
                     }, delayMillis)
                 } else {
-                    Joueur.transaction(100, 1)
+                    Joueur.transaction(CaseDépart.GAIN, 1)
                     Joueur.MettreAJourArgent(Views, Joueurs)
                     attendrePuisPasserAuJoueurSuivant()
                 }
@@ -346,7 +346,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
             is CasePrison -> {
                 if (!Joueur.isbot) {
                     android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                        afficherMessage(context, "Prison", "Vous êtes sur la case ${case.nom}. Allez directement en prison !")
+                        afficherMessage(context, "Prison", "Vous êtes sur la case ${case.NAMECASE}. Allez directement en prison !")
                         Joueur.pion.prison = true
                         Joueur.toursRestantsEnPrison = 2
                         passerAuJoueurSuivant()
@@ -362,7 +362,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
                 if (case.proprietaire != null && case.proprietaire != Joueur) {
                     if (!Joueur.isbot) {
                         android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                            afficherMessage(context, "Loyer", "${case.nom} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location}$.")
+                            afficherMessage(context, "Loyer", "${case.NAMECASE} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location}$.")
                             if (Joueur.argent >= case.location) {
                                 val commandeLocation = RentPropertyCommand(Joueur, case)
                                 commandeLocation.execute()
@@ -390,8 +390,8 @@ class GameActivity : AppCompatActivity(), GameObservable {
                     if (!Joueur.isbot) {
                         android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                             AlertDialog.Builder(context)
-                                .setTitle("Acheter ${case.nom} ?")
-                                .setMessage("Voulez-vous acheter ${case.nom} pour ${case.prix}$ ?")
+                                .setTitle("Acheter ${case.NAMECASE} ?")
+                                .setMessage("Voulez-vous acheter ${case.NAMECASE} pour ${case.prix}$ ?")
                                 .setPositiveButton("Oui") { _, _ ->
                                     if (Joueur.argent >= case.prix) {
                                         val commandeAchat = BuyPropertyCommand(Joueur, case)
@@ -399,13 +399,13 @@ class GameActivity : AppCompatActivity(), GameObservable {
                                         afficherMessage(
                                             context,
                                             "Achat réussi",
-                                            "${Joueur.nom} a acheté ${case.nom} pour ${case.prix}$. Argent restant : ${Joueur.argent}$."
+                                            "${Joueur.nom} a acheté ${case.NAMECASE} pour ${case.prix}$. Argent restant : ${Joueur.argent}$."
                                         )
                                     } else {
                                         afficherMessage(
                                             context,
                                             "Achat refusé",
-                                            "Vous n'avez pas assez d'argent pour acheter ${case.nom}."
+                                            "Vous n'avez pas assez d'argent pour acheter ${case.NAMECASE}."
                                         )
                                     }
                                     Joueur.MettreAJourArgent(Views, Joueurs)
@@ -415,7 +415,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
                                     afficherMessage(
                                         context,
                                         "Achat annulé",
-                                        "${Joueur.nom} a choisi de ne pas acheter ${case.nom}."
+                                        "${Joueur.nom} a choisi de ne pas acheter ${case.NAMECASE}."
                                     )
                                     attendrePuisPasserAuJoueurSuivant()
                                 }

@@ -1,10 +1,15 @@
 package com.example.projetmonopoly
 
-open class Case(val index : Int, val xpos : Float, val ypos : Float, val nom : String) {
+open class Case(
+    protected val index: Int,
+    protected val xpos: Float,
+    protected val ypos: Float,
+    protected val nom: String
+) {
+    val NAMECASE: String get() = nom
     operator fun component1() = xpos
     operator fun component2() = ypos
 }
-
 
 class Proprietes(index: Int , xpos : Float, ypos : Float, nom : String, val prix : Int, var location : Int,
                  var proprietaire :Joueur? = null) : Case(index, xpos, ypos, nom){
@@ -24,6 +29,7 @@ class CaseChance(index: Int , xpos : Float, ypos : Float,nom : String) : Case(in
 }
 
 class CaseDépart(index: Int , xpos : Float, ypos : Float,nom : String) : Case(index, xpos, ypos,nom){
-    fun donnerArgent(Argent_caseDépart : Int){
+    companion object {
+        const val GAIN = 100
     }
 }
