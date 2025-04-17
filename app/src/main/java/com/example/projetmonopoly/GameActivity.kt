@@ -332,12 +332,14 @@ class GameActivity : AppCompatActivity(), GameObservable {
                 if (!Joueur.isbot) {
                     android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                         afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.NAMECASE}. Vous recevez 100$ !")
-                        Joueur.transaction(CaseDépart.GAIN, 1)
+                        val ArriveSurCaseDépart = CaseDépartCommand(Joueur)
+                        ArriveSurCaseDépart.execute()
                         Joueur.MettreAJourArgent(Views, Joueurs)
                         attendrePuisPasserAuJoueurSuivant()
                     }, delayMillis)
                 } else {
-                    Joueur.transaction(CaseDépart.GAIN, 1)
+                    val BotArriveSurCaseDépart = CaseDépartCommand(Joueur)
+                    BotArriveSurCaseDépart.execute()
                     Joueur.MettreAJourArgent(Views, Joueurs)
                     attendrePuisPasserAuJoueurSuivant()
                 }
@@ -364,7 +366,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
                         android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                             afficherMessage(context, "Loyer", "${case.NAMECASE} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location}$.")
                             if (Joueur.argent >= case.location) {
-                                val commandeLocation = RentPropertyCommand(Joueur, case)
+                                val commandeLocation = LouerProprieteCommand(Joueur, case)
                                 commandeLocation.execute()
                                 Joueur.MettreAJourArgent(Views, Joueurs)
                                 afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location}$ à ${case.proprietaire!!.nom}.")
@@ -377,7 +379,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
                         }, delayMillis)
                     } else {
                         if (Joueur.argent >= case.location) {
-                            val commandeLocation = RentPropertyCommand(Joueur, case)
+                            val commandeLocation = LouerProprieteCommand(Joueur, case)
                             commandeLocation.execute()
                             Joueur.MettreAJourArgent(Views, Joueurs)
                         } else {
@@ -394,7 +396,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
                                 .setMessage("Voulez-vous acheter ${case.NAMECASE} pour ${case.prix}$ ?")
                                 .setPositiveButton("Oui") { _, _ ->
                                     if (Joueur.argent >= case.prix) {
-                                        val commandeAchat = BuyPropertyCommand(Joueur, case)
+                                        val commandeAchat = AchatProprieteCommand(Joueur, case)
                                         commandeAchat.execute()
                                         afficherMessage(
                                             context,
@@ -423,7 +425,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
                         }, delayMillis)
                     } else {
                         if (Joueur.argent >= case.prix && (0..1).random() == 1) {
-                            val commandeAchatBot = BuyPropertyCommand(Joueur, case)
+                            val commandeAchatBot = AchatProprieteCommand(Joueur, case)
                             commandeAchatBot.execute()
                             Joueur.MettreAJourArgent(Views, Joueurs)
                         }
@@ -435,13 +437,10 @@ class GameActivity : AppCompatActivity(), GameObservable {
             }
 
             is CaseChance -> {
-                val chanceSet = listOf(
-                    { Joueur.argent += 100 },
-                    { Joueur.argent -= 50 },
-                    { Joueur.argent -= 200 }
-                )
-                val actionChance = chanceSet.random()
-                actionChance()
+                if (case is CaseChance) {
+                    val commandCarteChance = CaseChanceCommand(Joueur,case)
+                    commandCarteChance.execute()
+                }
 
                 if (!Joueur.isbot) {
                     android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
