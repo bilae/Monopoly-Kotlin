@@ -1,7 +1,7 @@
 package com.example.projetmonopoly
 import android.widget.ImageView
 
-class Pion(val couleur: String, var xpos : Float, var ypos: Float, var prison : Boolean, var image : ImageView, var case : Int) {
+class Pion(var couleur : String,var xpos : Float, var ypos: Float, var prison : Boolean, var image : ImageView, var case : Int) {
 
     fun goto(x : Float,y: Float,Plateau : ImageView) {
         Plateau.post {

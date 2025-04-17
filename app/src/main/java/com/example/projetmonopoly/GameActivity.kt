@@ -11,6 +11,8 @@ import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import GameObserver
 import GameObservable
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 
 class GameActivity : AppCompatActivity(), GameObservable {
@@ -119,6 +121,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
         if (currentPlayerIndex == 0) { // Tour du joueur humain
             BoutonLancer.isClickable = true
             BoutonLancer.setOnClickListener {
+                BoutonLancer.isClickable = false
                 jouerTourHumain()
             }
         }
@@ -246,11 +249,19 @@ class GameActivity : AppCompatActivity(), GameObservable {
         currentPlayerIndex = (currentPlayerIndex + 1) % Joueurs.size
         verifierFinDePartie()
 
-        if (currentPlayerIndex > 0 && !gamestop) {
-            // C'est au tour d'un bot
-            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+        if (gamestop) return
+
+        if (currentPlayerIndex == 0) {
+            // Tour du joueur humain
+            BoutonLancer.isClickable = true
+            BoutonLancer.visibility = View.VISIBLE
+        } else {
+            // Tour d'un bot
+            BoutonLancer.isClickable = false
+            BoutonLancer.visibility = View.INVISIBLE
+            Handler(Looper.getMainLooper()).postDelayed({
                 jouerTourBot()
-            }, 1250)
+            }, 1500)
         }
     }
 
@@ -283,7 +294,11 @@ class GameActivity : AppCompatActivity(), GameObservable {
         }
     }
 
-
+    private fun attendrePuisPasserAuJoueurSuivant(delayMillis: Long = 1500L) {
+        Handler(Looper.getMainLooper()).postDelayed({
+            passerAuJoueurSuivant()
+        }, delayMillis)
+    }
 
     private fun getCasePosition1(index: Int): Pair<Float, Float> {
         val Plateau = findViewById<ImageView>(R.id.boardImage)
@@ -310,81 +325,103 @@ class GameActivity : AppCompatActivity(), GameObservable {
             findViewById<TextView>(R.id.bot3)
         )
 
+        val delayMillis = 1000L
+
         when (case) {
             is CaseDépart -> {
                 if (!Joueur.isbot) {
-                    afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 100$ !")
+                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                        afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.nom}. Vous recevez 100$ !")
+                        Joueur.transaction(100, 1)
+                        Joueur.MettreAJourArgent(Views, Joueurs)
+                        attendrePuisPasserAuJoueurSuivant()
+                    }, delayMillis)
+                } else {
+                    Joueur.transaction(100, 1)
+                    Joueur.MettreAJourArgent(Views, Joueurs)
+                    attendrePuisPasserAuJoueurSuivant()
                 }
-                Joueur.transaction(100, 1)
-                Joueur.MettreAJourArgent(Views, Joueurs)
-                passerAuJoueurSuivant()
             }
 
             is CasePrison -> {
                 if (!Joueur.isbot) {
-                    afficherMessage(context, "Prison", "Vous êtes sur la case ${case.nom}. Allez directement en prison !")
+                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                        afficherMessage(context, "Prison", "Vous êtes sur la case ${case.nom}. Allez directement en prison !")
+                        Joueur.pion.prison = true
+                        Joueur.toursRestantsEnPrison = 2
+                        passerAuJoueurSuivant()
+                    }, delayMillis)
+                } else {
+                    Joueur.pion.prison = true
+                    Joueur.toursRestantsEnPrison = 2
+                    attendrePuisPasserAuJoueurSuivant()
                 }
-                Joueur.pion.prison = true
-                Joueur.toursRestantsEnPrison = 2
-                passerAuJoueurSuivant()
             }
 
             is Proprietes -> {
                 if (case.proprietaire != null && case.proprietaire != Joueur) {
                     if (!Joueur.isbot) {
-                        afficherMessage(context, "Loyer", "${case.nom} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location}$.")
-                    }
-
-                    if (Joueur.argent >= case.location) {
-                        val commandeLocation = RentPropertyCommand(Joueur, case)
-                        commandeLocation.execute()
-                        Joueur.MettreAJourArgent(Views, Joueurs)
-                        afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location}$ à ${case.proprietaire!!.nom}.")
-
-                        
+                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                            afficherMessage(context, "Loyer", "${case.nom} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location}$.")
+                            if (Joueur.argent >= case.location) {
+                                val commandeLocation = RentPropertyCommand(Joueur, case)
+                                commandeLocation.execute()
+                                Joueur.MettreAJourArgent(Views, Joueurs)
+                                afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location}$ à ${case.proprietaire!!.nom}.")
+                            } else {
+                                afficherMessage(context, "Fonds insuffisants", "Vous n'avez pas assez d'argent pour payer le loyer.")
+                                Joueur.argent = 0
+                                Joueur.MettreAJourArgent(Views, Joueurs)
+                            }
+                            attendrePuisPasserAuJoueurSuivant()
+                        }, delayMillis)
                     } else {
-                        if (!Joueur.isbot) {
-                            afficherMessage(context, "Fonds insuffisants", "Vous n'avez pas assez d'argent pour payer le loyer.")
+                        if (Joueur.argent >= case.location) {
+                            val commandeLocation = RentPropertyCommand(Joueur, case)
+                            commandeLocation.execute()
+                            Joueur.MettreAJourArgent(Views, Joueurs)
+                        } else {
                             Joueur.argent = 0
                             Joueur.MettreAJourArgent(Views, Joueurs)
                         }
+                        attendrePuisPasserAuJoueurSuivant()
                     }
-                    passerAuJoueurSuivant()
                 } else if (case.proprietaire == null) {
                     if (!Joueur.isbot) {
-                        AlertDialog.Builder(context)
-                            .setTitle("Acheter ${case.nom} ?")
-                            .setMessage("Voulez-vous acheter ${case.nom} pour ${case.prix}$ ?")
-                            .setPositiveButton("Oui") { _, _ ->
-                                if (Joueur.argent >= case.prix) {
-                                    val commandeAchat = BuyPropertyCommand(Joueur, case)
-                                    commandeAchat.execute()
-                                    afficherMessage(
-                                        context,
-                                        "Achat réussi",
-                                        "${Joueur.nom} a acheté ${case.nom} pour ${case.prix}$. Argent restant : ${Joueur.argent}$."
-                                    )
-                                } else {
-                                    afficherMessage(
-                                        context,
-                                        "Achat refusé",
-                                        "Vous n'avez pas assez d'argent pour acheter ${case.nom}."
-                                    )
+                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                            AlertDialog.Builder(context)
+                                .setTitle("Acheter ${case.nom} ?")
+                                .setMessage("Voulez-vous acheter ${case.nom} pour ${case.prix}$ ?")
+                                .setPositiveButton("Oui") { _, _ ->
+                                    if (Joueur.argent >= case.prix) {
+                                        val commandeAchat = BuyPropertyCommand(Joueur, case)
+                                        commandeAchat.execute()
+                                        afficherMessage(
+                                            context,
+                                            "Achat réussi",
+                                            "${Joueur.nom} a acheté ${case.nom} pour ${case.prix}$. Argent restant : ${Joueur.argent}$."
+                                        )
+                                    } else {
+                                        afficherMessage(
+                                            context,
+                                            "Achat refusé",
+                                            "Vous n'avez pas assez d'argent pour acheter ${case.nom}."
+                                        )
+                                    }
+                                    Joueur.MettreAJourArgent(Views, Joueurs)
+                                    attendrePuisPasserAuJoueurSuivant()
                                 }
-                                Joueur.MettreAJourArgent(Views, Joueurs)
-                                passerAuJoueurSuivant()
-                            }
-                            .setNegativeButton("Non") { _, _ ->
-                                afficherMessage(
-                                    context,
-                                    "Achat annulé",
-                                    "${Joueur.nom} a choisi de ne pas acheter ${case.nom}."
-                                )
-                                passerAuJoueurSuivant()
-                            }
-                            .show()
+                                .setNegativeButton("Non") { _, _ ->
+                                    afficherMessage(
+                                        context,
+                                        "Achat annulé",
+                                        "${Joueur.nom} a choisi de ne pas acheter ${case.nom}."
+                                    )
+                                    attendrePuisPasserAuJoueurSuivant()
+                                }
+                                .show()
+                        }, delayMillis)
                     } else {
-                        // Logique pour les bots
                         if (Joueur.argent >= case.prix && (0..1).random() == 1) {
                             val commandeAchatBot = BuyPropertyCommand(Joueur, case)
                             commandeAchatBot.execute()
@@ -398,19 +435,24 @@ class GameActivity : AppCompatActivity(), GameObservable {
             }
 
             is CaseChance -> {
-                // Logique pour les cartes chance
                 val chanceSet = listOf(
                     { Joueur.argent += 100 },
                     { Joueur.argent -= 50 },
                     { Joueur.argent -= 200 }
                 )
-
-                // On tire une carte au hasard
                 val actionChance = chanceSet.random()
-                actionChance() // On applique l'effet de la carte
-                afficherMessage(context, "Carte chance", "${Joueur.nom} a maintenant ${Joueur.argent}$")
-                Joueur.MettreAJourArgent(Views, Joueurs)
-                passerAuJoueurSuivant()
+                actionChance()
+
+                if (!Joueur.isbot) {
+                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                        afficherMessage(context, "Carte chance", "${Joueur.nom} a maintenant ${Joueur.argent}$")
+                        Joueur.MettreAJourArgent(Views, Joueurs)
+                        attendrePuisPasserAuJoueurSuivant()
+                    }, delayMillis)
+                } else {
+                    Joueur.MettreAJourArgent(Views, Joueurs)
+                    passerAuJoueurSuivant()
+                }
             }
 
             else -> {
