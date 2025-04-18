@@ -27,7 +27,12 @@ class AchatProprieteCommand(val joueur : Joueur, val proprietes: Proprietes) : C
 class LouerProprieteCommand(val joueur : Joueur, val proprietes: Proprietes) : Command {
     override fun execute() {
         PerteArgentCommand(joueur,proprietes.location).execute()
-        GainArgentCommand(proprietes.proprietaire!!, proprietes.location).execute()
+        if (proprietes.proprietaire?.argent != null && proprietes.proprietaire!!.argent <= 0) {
+            return
+        }
+        else {
+            GainArgentCommand(proprietes.proprietaire!!, proprietes.location).execute()
+        }
     }
 }
 class CaseDépartCommand(val joueur: Joueur) : Command {
@@ -47,7 +52,7 @@ class CaseChanceCommand(
                     PerteArgentCommand(joueur, 50),
                     PerteArgentCommand(joueur, 200)
                 )
-                chanceCommands.random().execute()
+                chanceCommands.random().execute() //executer une commande aléatoire
             }
         }
     }

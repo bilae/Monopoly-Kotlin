@@ -1,6 +1,8 @@
 package com.example.projetmonopoly
 
+
 object Casesingleton {
+    //Liste des cases du plateau
     val boardPositions = listOf(
         //par rapport au coté gauche
         CaseDépart(0, 0f, 0.875f, "Départ"),  // Départ

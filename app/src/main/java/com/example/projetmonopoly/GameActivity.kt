@@ -24,6 +24,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
     private lateinit var Plateau:ImageView
     private lateinit var DiceImage: ImageView
     private lateinit var BoutonLancer: Button
+
     private val observers = mutableListOf<GameObserver>()
 
     override fun addObserver(observer: GameObserver) {
@@ -39,6 +40,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
             observer.onGameEvent(event)
         }
     }
+    //Pour afficher les messages dans le jeu
     fun afficherMessage(context: Context, titre: String, message: String) {
         AlertDialog.Builder(context)
             .setTitle(titre)
@@ -51,8 +53,8 @@ class GameActivity : AppCompatActivity(), GameObservable {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
 
-        val numBots = intent.getIntExtra("NUM_BOTS", 1)
-        var botViews = mutableListOf(
+        val numBots = intent.getIntExtra("NUM_BOTS", 1) //nombre de bots
+        val botViews = mutableListOf( //Texte affichage de l'argent des bots
             findViewById<TextView>(R.id.bot1),
             findViewById<TextView>(R.id.bot2),
             findViewById<TextView>(R.id.bot3)
@@ -67,6 +69,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
         // Objet joueur à définir plus tard dans propriétaire
         boardPositions = Casesingleton.boardPositions
 
+        //Liste des images des pions
         val pionViews = listOf(
             findViewById<ImageView>(R.id.pion_vert),
             findViewById<ImageView>(R.id.pion_jaune),
@@ -88,9 +91,10 @@ class GameActivity : AppCompatActivity(), GameObservable {
                 Joueurs.add(Joueur(pions[i], "BOT$i", 1500, isbot = true))
             }
             addObserver(BotMortObserver(Joueurs, botViews))
-            // Afficher uniquement les bons pions et bots
+            // Afficher uniquement les pions et Textbots en jeu
             for (i in pionViews.indices) {
-                pionViews[i].visibility = if (i < numBots + 1) ImageView.VISIBLE else ImageView.INVISIBLE
+                pionViews[i].visibility =
+                    if (i < numBots + 1) ImageView.VISIBLE else ImageView.INVISIBLE
             }
 
             for (i in botViews.indices) {
@@ -102,17 +106,6 @@ class GameActivity : AppCompatActivity(), GameObservable {
                 jouerTourBot()
             }
         }
-
-        // Afficher uniquement le nombre de bots sélectionné
-        for (i in botViews.indices) {
-            botViews[i].visibility = if (i < numBots) TextView.VISIBLE else TextView.INVISIBLE
-        }
-
-        for (i in pionViews.indices) {
-            pionViews[i].visibility = if (i < numBots + 1) ImageView.VISIBLE else ImageView.INVISIBLE
-        }
-
-
 
         // Gestion du clic sur le bouton de lancer de dé
         if (currentPlayerIndex == 0) { // Tour du joueur humain
@@ -138,8 +131,9 @@ class GameActivity : AppCompatActivity(), GameObservable {
         // Initialisation de la liste des pions
         pions = mutableListOf()
 
-        // Pion du joueur
+        // Coordonnées case départ
         val (startX, startY) = getCasePosition(0, boardX, boardY, boardWidth, boardHeight)
+        //Initialisation du pion joueur sur la case départ
         pions.add(
             Pion(
                 couleur = couleurs[0],
@@ -172,7 +166,8 @@ class GameActivity : AppCompatActivity(), GameObservable {
     }
 
     private fun jouerTourHumain() {
-        val joueur = Joueurs[currentPlayerIndex]
+        val joueur = Joueurs[currentPlayerIndex] //Définit celui qui joue
+        //vérifie l'état du joueur (prison ou non)
         if (joueur.pion.prison) {
             if (joueur.toursRestantsEnPrison > 0) {
                 afficherMessage(this, "Prison", "Vous êtes en prison. Il vous reste ${joueur.toursRestantsEnPrison} tour(s).")
@@ -194,19 +189,20 @@ class GameActivity : AppCompatActivity(), GameObservable {
             5 -> R.drawable.de5
             else -> R.drawable.de6
         }
-        findViewById<ImageView>(R.id.de1).setImageResource(drawableResource)
+        findViewById<ImageView>(R.id.de1).setImageResource(drawableResource) //met à jour l'image du dé
 
         val pion = joueur.pion
-        pion.case = (pion.case + resultde) % boardPositions.size
+        pion.case = (pion.case + resultde) % boardPositions.size //ajout du nombre de case
         Plateau.post {
-            val (absx, absy) = Useindex(pion.case)
-            pion.goto(absx, absy, findViewById(R.id.boardImage))
+            val (absx, absy) = useIndex(pion.case)
+            pion.goto(absx, absy, findViewById(R.id.boardImage)) //déplacement du pion
             joueurArriveSurCase(this, joueur, pion)
         }
     }
 
     private fun jouerTourBot() {
         val bot = Joueurs[currentPlayerIndex]
+        //Vérifie que le bot peut jouer
         if(bot.argent <=0) {
             this.notifyObservers("bot_mort_$currentPlayerIndex")
             passerAuJoueurSuivant()
@@ -236,7 +232,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
         val pion = bot.pion
         pion.case = (pion.case + resultde) % boardPositions.size
         Plateau.post {
-            val (absx, absy) = Useindex(pion.case)
+            val (absx, absy) = useIndex(pion.case)
             pion.goto(absx, absy, findViewById(R.id.boardImage))
             joueurArriveSurCase(this, bot, pion)
         }
@@ -291,17 +287,20 @@ class GameActivity : AppCompatActivity(), GameObservable {
         }
     }
 
+    //délai entre les tours des joueurs
     private fun attendrePuisPasserAuJoueurSuivant(delayMillis: Long = 1500L) {
         Handler(Looper.getMainLooper()).postDelayed({
             passerAuJoueurSuivant()
         }, delayMillis)
     }
 
-    private fun Useindex(index: Int): Pair<Float, Float> {
+    //Utiliser l'index de la case
+    private fun useIndex(index: Int): Pair<Float, Float> {
         val Plateau = findViewById<ImageView>(R.id.boardImage)
         return getCasePosition(index, Plateau.x, Plateau.y, Plateau.width.toFloat(), Plateau.height.toFloat())
     }
 
+    //Trouver la position de la case
     private fun getCasePosition(index: Int, boardX: Float, boardY: Float, boardWidth: Float, boardHeight: Float): Pair<Float, Float> {
         if (index !in boardPositions.indices) {
             Log.e("Pion", "Index de case invalide: $index")
@@ -313,6 +312,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
         return Pair(absX, absY)
     }
 
+    //Définir ce que doit faire le joueur sur la case où il arrive
     fun joueurArriveSurCase(context: Context, Joueur: Joueur, pion: Pion) {
         val case = boardPositions[pion.case]
         val Views = listOf(
@@ -322,18 +322,18 @@ class GameActivity : AppCompatActivity(), GameObservable {
             findViewById<TextView>(R.id.bot3)
         )
 
-        val delayMillis = 1000L
-
         when (case) {
             is CaseDépart -> {
                 if (!Joueur.isbot) {
-                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                        afficherMessage(context, "Case Départ", "Vous êtes sur la case ${case.NAMECASE}. Vous recevez 100$ !")
-                        val ArriveSurCaseDépart = CaseDépartCommand(Joueur)
-                        ArriveSurCaseDépart.execute()
-                        Joueur.MettreAJourArgent(Views, Joueurs)
-                        attendrePuisPasserAuJoueurSuivant()
-                    }, delayMillis)
+                    afficherMessage(
+                        context,
+                        "Case Départ",
+                        "Vous êtes sur la case ${case.NAMECASE}. Vous recevez 100$ !"
+                    )
+                    val ArriveSurCaseDépart = CaseDépartCommand(Joueur)
+                    ArriveSurCaseDépart.execute()
+                    Joueur.MettreAJourArgent(Views, Joueurs)
+                    attendrePuisPasserAuJoueurSuivant()
                 } else {
                     val BotArriveSurCaseDépart = CaseDépartCommand(Joueur)
                     BotArriveSurCaseDépart.execute()
@@ -344,11 +344,14 @@ class GameActivity : AppCompatActivity(), GameObservable {
 
             is CasePrison -> {
                 if (!Joueur.isbot) {
-                        afficherMessage(context, "Prison", "Vous êtes sur la case ${case.NAMECASE}. Allez directement en prison !")
-                        Joueur.pion.prison = true
-                        Joueur.toursRestantsEnPrison = 2
-                        attendrePuisPasserAuJoueurSuivant()
-
+                    afficherMessage(
+                        context,
+                        "Prison",
+                        "Vous êtes sur la case ${case.NAMECASE}. Allez directement en prison !"
+                    )
+                    Joueur.pion.prison = true
+                    Joueur.toursRestantsEnPrison = 2
+                    attendrePuisPasserAuJoueurSuivant()
                 } else {
                     Joueur.pion.prison = true
                     Joueur.toursRestantsEnPrison = 2
@@ -358,21 +361,33 @@ class GameActivity : AppCompatActivity(), GameObservable {
 
             is Proprietes -> {
                 if (case.proprietaire != null && case.proprietaire != Joueur) {
-                    if (!Joueur.isbot) {
-                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                            afficherMessage(context, "Loyer", "${case.NAMECASE} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location}$.")
-                            if (Joueur.argent >= case.location) {
-                                val commandeLocation = LouerProprieteCommand(Joueur, case)
-                                commandeLocation.execute()
-                                Joueur.MettreAJourArgent(Views, Joueurs)
-                                afficherMessage(context, "Paiement effectué", "${Joueur.nom} a payé ${case.location}$ à ${case.proprietaire!!.nom}.")
-                            } else {
-                                afficherMessage(context, "Fonds insuffisants", "Vous n'avez pas assez d'argent pour payer le loyer.")
-                                Joueur.argent = 0
-                                Joueur.MettreAJourArgent(Views, Joueurs)
-                            }
-                            attendrePuisPasserAuJoueurSuivant()
-                        }, delayMillis)
+                    if (!Joueur.isbot) { //Si joueur humain, afficher message de transaction
+
+                        afficherMessage(
+                            context,
+                            "Loyer",
+                            "${case.NAMECASE} appartient déjà à ${case.proprietaire!!.nom}. Vous devez payer un loyer de ${case.location}$."
+                        )
+                        if (Joueur.argent >= case.location) {
+                            val commandeLocation = LouerProprieteCommand(Joueur, case)
+                            commandeLocation.execute()
+                            Joueur.MettreAJourArgent(Views, Joueurs)
+                            afficherMessage(
+                                context,
+                                "Paiement effectué",
+                                "${Joueur.nom} a payé ${case.location}$ à ${case.proprietaire!!.nom}."
+                            )
+                        } else {
+                            afficherMessage(
+                                context,
+                                "Fonds insuffisants",
+                                "Vous n'avez pas assez d'argent pour payer le loyer."
+                            )
+                            Joueur.argent = 0
+                            Joueur.MettreAJourArgent(Views, Joueurs)
+                        }
+                        attendrePuisPasserAuJoueurSuivant()
+
                     } else {
                         if (Joueur.argent >= case.location) {
                             val commandeLocation = LouerProprieteCommand(Joueur, case)
@@ -385,41 +400,40 @@ class GameActivity : AppCompatActivity(), GameObservable {
                         attendrePuisPasserAuJoueurSuivant()
                     }
                 } else if (case.proprietaire == null) {
-                    if (!Joueur.isbot) {
-                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                            AlertDialog.Builder(context)
-                                .setTitle("Acheter ${case.NAMECASE} ?")
-                                .setMessage("Voulez-vous acheter ${case.NAMECASE} pour ${case.prix}$ ?")
-                                .setPositiveButton("Oui") { _, _ ->
-                                    if (Joueur.argent >= case.prix) {
-                                        val commandeAchat = AchatProprieteCommand(Joueur, case)
-                                         commandeAchat.execute()
-                                        afficherMessage(
-                                            context,
-                                            "Achat réussi",
-                                            "${Joueur.nom} a acheté ${case.NAMECASE} pour ${case.prix}$. Argent restant : ${Joueur.argent}$."
-                                        )
-                                    } else {
-                                        afficherMessage(
-                                            context,
-                                            "Achat refusé",
-                                            "Vous n'avez pas assez d'argent pour acheter ${case.NAMECASE}."
-                                        )
-                                    }
-                                    Joueur.MettreAJourArgent(Views, Joueurs)
-                                    attendrePuisPasserAuJoueurSuivant()
-                                }
-                                .setNegativeButton("Non") { _, _ ->
+                    if (!Joueur.isbot) { //Si joueur humain, proposer l'achat de la proprieté
+
+                        AlertDialog.Builder(context)
+                            .setTitle("Acheter ${case.NAMECASE} ?")
+                            .setMessage("Voulez-vous acheter ${case.NAMECASE} pour ${case.prix}$ ?")
+                            .setPositiveButton("Oui") { _, _ ->
+                                if (Joueur.argent >= case.prix) {
+                                    val commandeAchat = AchatProprieteCommand(Joueur, case)
+                                    commandeAchat.execute()
                                     afficherMessage(
                                         context,
-                                        "Achat annulé",
-                                        "${Joueur.nom} a choisi de ne pas acheter ${case.NAMECASE}."
+                                        "Achat réussi",
+                                        "${Joueur.nom} a acheté ${case.NAMECASE} pour ${case.prix}$. Argent restant : ${Joueur.argent}$."
                                     )
-                                    attendrePuisPasserAuJoueurSuivant()
+                                } else {
+                                    afficherMessage(
+                                        context,
+                                        "Achat refusé",
+                                        "Vous n'avez pas assez d'argent pour acheter ${case.NAMECASE}."
+                                    )
                                 }
-                                .show()
-                        }, delayMillis)
-                    } else {
+                                Joueur.MettreAJourArgent(Views, Joueurs)
+                                attendrePuisPasserAuJoueurSuivant()
+                            }
+                            .setNegativeButton("Non") { _, _ ->
+                                afficherMessage(
+                                    context,
+                                    "Achat annulé",
+                                    "${Joueur.nom} a choisi de ne pas acheter ${case.NAMECASE}."
+                                )
+                                attendrePuisPasserAuJoueurSuivant()
+                            }
+                            .show()
+                    } else { //Sinon, le bot choisi aléatoirement
                         if (Joueur.argent >= case.prix && (0..1).random() == 1) {
                             val commandeAchatBot = AchatProprieteCommand(Joueur, case)
                             commandeAchatBot.execute()
@@ -434,21 +448,19 @@ class GameActivity : AppCompatActivity(), GameObservable {
 
             is CaseChance -> {
                 if (case is CaseChance) {
-                    val commandCarteChance = CaseChanceCommand(Joueur,case)
+                    val commandCarteChance = CaseChanceCommand(Joueur, case)
                     commandCarteChance.execute()
                 }
 
-                if (!Joueur.isbot) {
-                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                        afficherMessage(context, "Carte chance", "${Joueur.nom} a maintenant ${Joueur.argent}$")
-                        Joueur.MettreAJourArgent(Views, Joueurs)
-                        attendrePuisPasserAuJoueurSuivant()
-                    }, delayMillis)
-                } else {
-                    Joueur.MettreAJourArgent(Views, Joueurs)
-                    passerAuJoueurSuivant()
-                }
+                afficherMessage(
+                    context,
+                    "Carte chance",
+                    "${Joueur.nom} a maintenant ${Joueur.argent}$"
+                )
+                Joueur.MettreAJourArgent(Views, Joueurs)
+                attendrePuisPasserAuJoueurSuivant()
             }
+
 
             else -> {
                 passerAuJoueurSuivant()

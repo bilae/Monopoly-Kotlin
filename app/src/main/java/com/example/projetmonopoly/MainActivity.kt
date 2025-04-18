@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         val spinnerBots: Spinner = findViewById(R.id.spinnerBots)
         val btnStartGame: Button = findViewById(R.id.btnStartGame)
 
-        // Ici on choisit le nb de joueurs (des bots enft)
+        // Ici on choisit le nb de joueurs
         val botOptions = arrayOf("1 Bot", "2 Bots", "3 Bots")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, botOptions)
         spinnerBots.adapter = adapter
