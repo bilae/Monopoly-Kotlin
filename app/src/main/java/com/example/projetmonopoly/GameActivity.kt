@@ -88,9 +88,10 @@ class GameActivity : AppCompatActivity(), GameObservable {
             Joueurs.add(Joueur(pions[0], "Joueur", 1500, isbot = false))
 
             for (i in 1..numBots) {
-                Joueurs.add(Joueur(pions[i], "BOT$i", 1500, isbot = true))
+                Joueurs.add(Joueur(pions[i], "BOT$i", 15, isbot = true))
             }
-            addObserver(BotMortObserver(Joueurs, botViews))
+            addObserver(RetirerPionObserver(Joueurs, botViews))
+            addObserver(RetirerTextViewBotObserver(Joueurs, botViews))
             // Afficher uniquement les pions et Textbots en jeu
             for (i in pionViews.indices) {
                 pionViews[i].visibility =
