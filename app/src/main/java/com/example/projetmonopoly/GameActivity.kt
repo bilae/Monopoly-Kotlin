@@ -21,7 +21,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
     private lateinit var boardPositions: List<Case>
     private lateinit var pions: MutableList<Pion>
     private var gamestop = false
-    private lateinit var Plateau:ImageView
+    private lateinit var Plateau: ImageView
     private lateinit var DiceImage: ImageView
     private lateinit var BoutonLancer: Button
 
@@ -40,6 +40,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
             observer.onGameEvent(event)
         }
     }
+
     //Pour afficher les messages dans le jeu
     fun afficherMessage(context: Context, titre: String, message: String) {
         AlertDialog.Builder(context)
@@ -88,7 +89,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
             Joueurs.add(Joueur(pions[0], "Joueur", 1500, isbot = false))
 
             for (i in 1..numBots) {
-                Joueurs.add(Joueur(pions[i], "BOT$i", 15, isbot = true))
+                Joueurs.add(Joueur(pions[i], "BOT$i", 1500, isbot = true))
             }
             addObserver(RetirerPionObserver(Joueurs, botViews))
             addObserver(RetirerTextViewBotObserver(Joueurs, botViews))
@@ -123,6 +124,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
             jouerTourBot()
         }
     }
+
     private fun initialiserPions(numBots: Int, pionViews: List<ImageView>, couleurs: List<String>) {
         val boardWidth = Plateau.width.toFloat()
         val boardHeight = Plateau.height.toFloat()
@@ -171,7 +173,11 @@ class GameActivity : AppCompatActivity(), GameObservable {
         //vérifie l'état du joueur (prison ou non)
         if (joueur.pion.prison) {
             if (joueur.toursRestantsEnPrison > 0) {
-                afficherMessage(this, "Prison", "Vous êtes en prison. Il vous reste ${joueur.toursRestantsEnPrison} tour(s).")
+                afficherMessage(
+                    this,
+                    "Prison",
+                    "Vous êtes en prison. Il vous reste ${joueur.toursRestantsEnPrison} tour(s)."
+                )
                 joueur.toursRestantsEnPrison--
                 passerAuJoueurSuivant()
                 return
@@ -204,7 +210,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
     private fun jouerTourBot() {
         val bot = Joueurs[currentPlayerIndex]
         //Vérifie que le bot peut jouer
-        if(bot.argent <=0) {
+        if (bot.argent <= 0) {
             this.notifyObservers("bot_mort_$currentPlayerIndex")
             passerAuJoueurSuivant()
             return
@@ -263,7 +269,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
         var nbreBotEnNegatif = 0
 
         // Comptabiliser les bots en négatif
-        for (i in 1 .. Joueurs.size - 1) {
+        for (i in 1..Joueurs.size - 1) {
             if (Joueurs[i].argent <= 0) {
                 nbreBotEnNegatif++
             }
@@ -298,11 +304,23 @@ class GameActivity : AppCompatActivity(), GameObservable {
     //Utiliser l'index de la case
     private fun useIndex(index: Int): Pair<Float, Float> {
         val Plateau = findViewById<ImageView>(R.id.boardImage)
-        return getCasePosition(index, Plateau.x, Plateau.y, Plateau.width.toFloat(), Plateau.height.toFloat())
+        return getCasePosition(
+            index,
+            Plateau.x,
+            Plateau.y,
+            Plateau.width.toFloat(),
+            Plateau.height.toFloat()
+        )
     }
 
     //Trouver la position de la case
-    private fun getCasePosition(index: Int, boardX: Float, boardY: Float, boardWidth: Float, boardHeight: Float): Pair<Float, Float> {
+    private fun getCasePosition(
+        index: Int,
+        boardX: Float,
+        boardY: Float,
+        boardWidth: Float,
+        boardHeight: Float
+    ): Pair<Float, Float> {
         if (index !in boardPositions.indices) {
             Log.e("Pion", "Index de case invalide: $index")
             return Pair(boardX, boardY)
