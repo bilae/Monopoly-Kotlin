@@ -24,9 +24,6 @@ class GameActivity : AppCompatActivity(), GameObservable {
     private lateinit var Plateau:ImageView
     private lateinit var DiceImage: ImageView
     private lateinit var BoutonLancer: Button
-
-    var nbreBotEnNegatif = 0
-
     private val observers = mutableListOf<GameObserver>()
 
     override fun addObserver(observer: GameObserver) {
@@ -88,7 +85,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
             Joueurs.add(Joueur(pions[0], "Joueur", 1500, isbot = false))
 
             for (i in 1..numBots) {
-                Joueurs.add(Joueur(pions[i], "BOT$i", 100, isbot = true))
+                Joueurs.add(Joueur(pions[i], "BOT$i", 1500, isbot = true))
             }
             addObserver(BotMortObserver(Joueurs, botViews))
             // Afficher uniquement les bons pions et bots
@@ -142,7 +139,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
         pions = mutableListOf()
 
         // Pion du joueur
-        val (startX, startY) = getCasePosition2(0, boardX, boardY, boardWidth, boardHeight)
+        val (startX, startY) = getCasePosition(0, boardX, boardY, boardWidth, boardHeight)
         pions.add(
             Pion(
                 couleur = couleurs[0],
@@ -158,7 +155,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
 
         // Pions bots
         for (i in 1..numBots) {
-            val (botX, botY) = getCasePosition2(0, boardX, boardY, boardWidth, boardHeight)
+            val (botX, botY) = getCasePosition(0, boardX, boardY, boardWidth, boardHeight)
             pions.add(
                 Pion(
                     couleur = couleurs[i],
@@ -202,7 +199,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
         val pion = joueur.pion
         pion.case = (pion.case + resultde) % boardPositions.size
         Plateau.post {
-            val (absx, absy) = getCasePosition1(pion.case)
+            val (absx, absy) = Useindex(pion.case)
             pion.goto(absx, absy, findViewById(R.id.boardImage))
             joueurArriveSurCase(this, joueur, pion)
         }
@@ -239,7 +236,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
         val pion = bot.pion
         pion.case = (pion.case + resultde) % boardPositions.size
         Plateau.post {
-            val (absx, absy) = getCasePosition1(pion.case)
+            val (absx, absy) = Useindex(pion.case)
             pion.goto(absx, absy, findViewById(R.id.boardImage))
             joueurArriveSurCase(this, bot, pion)
         }
@@ -300,12 +297,12 @@ class GameActivity : AppCompatActivity(), GameObservable {
         }, delayMillis)
     }
 
-    private fun getCasePosition1(index: Int): Pair<Float, Float> {
+    private fun Useindex(index: Int): Pair<Float, Float> {
         val Plateau = findViewById<ImageView>(R.id.boardImage)
-        return getCasePosition2(index, Plateau.x, Plateau.y, Plateau.width.toFloat(), Plateau.height.toFloat())
+        return getCasePosition(index, Plateau.x, Plateau.y, Plateau.width.toFloat(), Plateau.height.toFloat())
     }
 
-    private fun getCasePosition2(index: Int, boardX: Float, boardY: Float, boardWidth: Float, boardHeight: Float): Pair<Float, Float> {
+    private fun getCasePosition(index: Int, boardX: Float, boardY: Float, boardWidth: Float, boardHeight: Float): Pair<Float, Float> {
         if (index !in boardPositions.indices) {
             Log.e("Pion", "Index de case invalide: $index")
             return Pair(boardX, boardY)
@@ -347,12 +344,11 @@ class GameActivity : AppCompatActivity(), GameObservable {
 
             is CasePrison -> {
                 if (!Joueur.isbot) {
-                    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
                         afficherMessage(context, "Prison", "Vous êtes sur la case ${case.NAMECASE}. Allez directement en prison !")
                         Joueur.pion.prison = true
                         Joueur.toursRestantsEnPrison = 2
-                        passerAuJoueurSuivant()
-                    }, delayMillis)
+                        attendrePuisPasserAuJoueurSuivant()
+
                 } else {
                     Joueur.pion.prison = true
                     Joueur.toursRestantsEnPrison = 2
@@ -397,7 +393,7 @@ class GameActivity : AppCompatActivity(), GameObservable {
                                 .setPositiveButton("Oui") { _, _ ->
                                     if (Joueur.argent >= case.prix) {
                                         val commandeAchat = AchatProprieteCommand(Joueur, case)
-                                        commandeAchat.execute()
+                                         commandeAchat.execute()
                                         afficherMessage(
                                             context,
                                             "Achat réussi",
