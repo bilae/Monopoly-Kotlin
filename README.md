@@ -1,6 +1,6 @@
-# InfoBA2
+# Second's year project in Engineering BSc
 
-Principe du projet : Monopoly
+Monopoly game
 
 Membres : 
     - DAOUD Méhdi
